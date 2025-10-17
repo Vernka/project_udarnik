@@ -10,6 +10,23 @@ def init_file():
 
     return render_template("theory.html", data=file)
 
+def init_such():
+    such = []
+    zn = {}
+    with open('static/Существительные.txt', 'r', encoding="utf-8") as f:
+        line = f.readline()
+        while line:
+            line = line.rstrip()
+            if len(line.split("(")) != 1:
+                odin = line[:5]
+                such.append(odin)
+                dop = line[7:-1]
+                zn[odin] = dop
+            else:
+                such.append(line)
+            line = f.readline()
+
+    return render_template('exercise_such.html', data=such)
 
 @app.route("/")
 @app.route("/index")
@@ -24,13 +41,17 @@ def exercise():
 def exercise_word():
     return render_template("exercise_word.html")
 
+@app.route("/exercise_such")
+def exercise_such():
+    return render_template("exercise_such.html")
+
 @app.route("/theory")
 def theory():
     return render_template("theory.html")
 
-@app.route("/out")
-def out():
-    return render_template("out.html")
+@app.route("/sign_in")
+def sign_in():
+    return render_template("sign.html")
 
 @app.route("/reg")
 def reg():
