@@ -1,32 +1,9 @@
 import flask
-from flask import render_template
+from flask import render_template, url_for, redirect
+
 
 app = flask.Flask(__name__)
 
-def init_file():
-    file = []
-    with open("static/data.txt", "r", encoding="utf-8") as f:
-        file = f.readlines()
-
-    return render_template("theory.html", data=file)
-
-def init_such():
-    such = []
-    zn = {}
-    with open('static/Существительные.txt', 'r', encoding="utf-8") as f:
-        line = f.readline()
-        while line:
-            line = line.rstrip()
-            if len(line.split("(")) != 1:
-                odin = line[:5]
-                such.append(odin)
-                dop = line[7:-1]
-                zn[odin] = dop
-            else:
-                such.append(line)
-            line = f.readline()
-
-    return render_template('exercise_such.html', data=such)
 
 @app.route("/")
 @app.route("/index")
@@ -43,11 +20,38 @@ def exercise_word():
 
 @app.route("/exercise_such")
 def exercise_such():
-    return render_template("exercise_such.html")
+    cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
+            "ъ", "ь"]
+    glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
+    such = []
+    zn = {}
+    with open('static/Существительные.txt', 'r', encoding="utf-8") as f:
+        line = f.readline()
+        while line:
+            line = line.rstrip()
+            if len(line.split("(")) != 1:
+                odin = line[:5]
+                such.append(odin)
+                dop = line[7:-1]
+                zn[odin] = dop
+            else:
+                such.append(line)
+            line = f.readline()
+    for i in such:
+        word = such[index]
+
+    return render_template('exercise_such.html', data=word, cogl=cogl, glas=glas)
+
+@app.route("/new_word")
+def new_word(index):
+    index += 1
+    return redirect(url_for("exercise_such"))
 
 @app.route("/theory")
 def theory():
-    return render_template("theory.html")
+    with open('static/Слова.txt', 'r', encoding="utf-8") as f:
+        line = f.read()
+    return render_template('theory.html', data=line)
 
 @app.route("/sign_in")
 def sign_in():
