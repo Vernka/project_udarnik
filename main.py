@@ -1,5 +1,6 @@
 import flask
 from flask import render_template, url_for, redirect
+import random
 
 
 app = flask.Flask(__name__)
@@ -37,21 +38,23 @@ def exercise_such():
             else:
                 such.append(line)
             line = f.readline()
-    for i in such:
-        word = such[index]
-
+    if such:
+        word = random.choice(such)
+    else:
+        word = ""
     return render_template('exercise_such.html', data=word, cogl=cogl, glas=glas)
 
-@app.route("/new_word")
-def new_word(index):
-    index += 1
-    return redirect(url_for("exercise_such"))
+
 
 @app.route("/theory")
 def theory():
     with open('static/Слова.txt', 'r', encoding="utf-8") as f:
         line = f.read()
     return render_template('theory.html', data=line)
+
+@app.route("/statistic")
+def statistic():
+    return render_template("statistic.html")
 
 @app.route("/sign_in")
 def sign_in():

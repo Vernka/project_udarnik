@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Тренировка</title>
+    <style>
+            .link {
+                display: inline-block;
+                padding: 10px 20px;
+                background: #87CEFA;
+                border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+
+            .cogl {
+            display: inline-block;
+                padding: 10px 20px;
+            background: grey;
+             border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+
+            .glas_no {
+            display: inline-block;
+                padding: 10px 20px;
+            background: grey;
+             border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+
+            .glas_no:active {
+            display: inline-block;
+                padding: 10px 20px;
+            background: red;
+             border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+
+            .glas_yes {
+            display: inline-block;
+                padding: 10px 20px;
+                background: grey;
+                border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+
+            .glas_yes:active {
+            display: inline-block;
+                padding: 10px 20px;
+                background: green;
+                border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+        </style>
+</head>
+<body>
+{% if word != "" %}
+<a href="/index" class="link" align="right">Закончить тренировку</a>
+              {% for elem in data %}
+                    {% if elem in cogl %}
+                        <a class="cogl">{{ elem }}</a>
+                    {% elif elem in glas and elem.islower() %}
+                        <a href="/exercise_such" class="glas_no">{{ elem }}</a>
+                    {% else %}
+                        <a href="/exercise_such" class="glas_yes">{{ elem.lower() }}</a>
+                    {% endif %}
+              {% endfor %}
+{% else %}
+<a href="/index" class="link" align="right">Вернуться на главную страницу</a>
+<a href="/statistic" class="link" align="right">Смотреть статистику</a>
+{% endif %}
+
+</body>
+</html>
