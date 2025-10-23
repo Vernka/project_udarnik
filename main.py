@@ -1,10 +1,11 @@
 import flask
-from flask import render_template, url_for, redirect
+from flask import render_template, url_for, redirect, request
 import random
 
 
 app = flask.Flask(__name__)
 
+remain_such = []
 
 @app.route("/")
 @app.route("/index")
@@ -19,8 +20,9 @@ def exercise():
 def exercise_word():
     return render_template("exercise_word.html")
 
-@app.route("/exercise_such")
-def exercise_such():
+@app.route("/such_file")
+def such_file():
+    global remain_such
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
@@ -38,13 +40,29 @@ def exercise_such():
             else:
                 such.append(line)
             line = f.readline()
-    if such:
-        word = random.choice(such)
+    remain_such = such.copy()
+    if len(remain_such) != 0:
+        word = random.choice(remain_such)
+        remain_such.remove(word)
     else:
         word = ""
     return render_template('exercise_such.html', data=word, cogl=cogl, glas=glas)
 
 
+@app.route("/exercise_such", methods=["GET", "POST"])
+def exercise_such():
+    a = []
+    global remain_such
+    cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
+            "ъ", "ь"]
+    glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
+    if remain_such != a:
+        word = random.choice(remain_such)
+        remain_such.remove(word)
+        print(remain_such)
+    else:
+        word = ""
+    return render_template('exercise_such.html', data=word, cogl=cogl, glas=glas)
 
 @app.route("/theory")
 def theory():
