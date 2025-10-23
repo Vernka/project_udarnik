@@ -66,6 +66,7 @@
         </style>
 </head>
 <body>
+<form action="/exercise_such" method="POST">
 {% if word != "" %}
 <a href="/index" class="link" align="right">Закончить тренировку</a>
               {% for elem in data %}
@@ -78,9 +79,10 @@
                     {% endif %}
               {% endfor %}
 {% else %}
-<a href="/index" class="link" align="right">Вернуться на главную страницу</a>
-<a href="/statistic" class="link" align="right">Смотреть статистику</a>
+    <h1>Тренировка закончена</h1>
+    <a href="/index" class="link" align="right">Вернуться на главную страницу</a>
+    <a href="/statistic" class="link" align="right">Смотреть статистику</a>
 {% endif %}
-
+</form>
 </body>
 </html>
