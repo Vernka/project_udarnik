@@ -34,14 +34,9 @@
                 font-weight: bold;
             }
 
-            .glas_no:active {
-            display: inline-block;
-                padding: 10px 20px;
+            .glas_no.active {
             background: red;
-             border-radius: 8px;
-                text-decoration: none;
-                color: black;
-                font-weight: bold;
+            box-shadow: 0 0 10px red;
             }
 
             .glas_yes {
@@ -54,28 +49,23 @@
                 font-weight: bold;
             }
 
-            .glas_yes:active {
-            display: inline-block;
-                padding: 10px 20px;
-                background: green;
-                border-radius: 8px;
-                text-decoration: none;
-                color: black;
-                font-weight: bold;
+            .glas_yes.active {
+            background: green;
+            box-shadow: 0 0 10px green;
             }
         </style>
 </head>
 <body>
 <form action="/exercise_such" method="POST">
-{% if word != "" %}
+{% if data %}
 <a href="/index" class="link" align="right">Закончить тренировку</a>
               {% for elem in data %}
                     {% if elem in cogl %}
                         <a class="cogl">{{ elem }}</a>
                     {% elif elem in glas and elem.islower() %}
-                        <a href="/exercise_such" class="glas_no">{{ elem }}</a>
+                        <a href="#" class="glas_no" onclick="handleGlasNo(this, '/exercise_such')">{{ elem }}</a>
                     {% else %}
-                        <a href="/exercise_such" class="glas_yes">{{ elem.lower() }}</a>
+                        <a href="#" class="glas_yes" onclick="handleGlasYes(this, '/exercise_such')">{{ elem.lower() }}</a>
                     {% endif %}
               {% endfor %}
 {% else %}
@@ -84,5 +74,38 @@
     <a href="/statistic" class="link" align="right">Смотреть статистику</a>
 {% endif %}
 </form>
+<script>
+    function handleGlasYes(button, redirectUrl) {
+        // 1. Подсвечиваем кнопку
+        button.classList.add('active');
+
+        // 2. Блокируем повторные нажатия
+        button.style.pointerEvents = 'none';
+
+        // 3. Через 3 секунды переходим по ссылке
+        setTimeout(function() {
+            window.location.href = redirectUrl;
+        }, 500);
+
+        // 4. Отменяем стандартное поведение ссылки
+        return false;
+    }
+
+    function handleGlasNo(button, redirectUrl) {
+        // 1. Подсвечиваем кнопку
+        button.classList.add('active');
+
+        // 2. Блокируем повторные нажатия
+        button.style.pointerEvents = 'none';
+
+        // 3. Через 3 секунды переходим по ссылке
+        setTimeout(function() {
+            window.location.href = redirectUrl;
+        }, 500);
+
+        // 4. Отменяем стандартное поведение ссылки
+        return false;
+    }
+</script>
 </body>
 </html>
