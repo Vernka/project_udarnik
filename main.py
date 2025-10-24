@@ -1,6 +1,7 @@
 import flask
 from flask import render_template, url_for, redirect, request
 import random
+import sqlite3
 
 
 app = flask.Flask(__name__)
@@ -59,7 +60,6 @@ def exercise_such():
     if remain_such != a:
         word = random.choice(remain_such)
         remain_such.remove(word)
-        print(remain_such)
     else:
         word = ""
     return render_template('exercise_such.html', data=word, cogl=cogl, glas=glas)
@@ -78,9 +78,21 @@ def statistic():
 def sign_in():
     return render_template("sign.html")
 
-@app.route("/reg")
+@app.route("/reg", methods=["GET"])
 def reg():
     return render_template("reg.html")
+
+@app.route("/register_users", methods=["POST"])
+def register_users():
+    login = request.form['login']
+    password = request.form['password']
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO users (login, password) VALUES (?, ?)", (login, password))
+    conn.commit()
+    conn.close()
+
+    return "Пользователь успешно зарегистрирован!"
 
 
 if __name__ == "__main__":
