@@ -12,52 +12,7 @@ remain_such = []
 remain_pri = []
 remain_glag = []
 remain_dn = []
-def table():
-    conn = sqlite3.connect('users_db.sqlite')
-    cursor = conn.cursor()
 
-    cursor.execute('''
-        CREATE TABLE Users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            login VARCHAR(20) NOT NULL,
-            password VARCHAR(20) NOT NULL,
-            statistic_word INT,
-            statistic_such INT,
-            statistic_pri INT,
-            statistic_glag INT,
-            statistic_dn INT,
-        )
-    ''')
-    cursor.execute("PRAGMA table_info(films)")
-    existing_columns = [column[1] for column in cursor.fetchall()]
-
-    required_columns = ['genre', 'rating', 'description']
-    for column in required_columns:
-        if column not in existing_columns:
-            if column == 'rating':
-                cursor.execute(f"ALTER TABLE films ADD COLUMN {column} REAL")
-            else:
-                cursor.execute(f"ALTER TABLE films ADD COLUMN {column} TEXT")
-            print(f"Добавлена конпка: {column}")
-
-    conn.close()
-
-def data_table():
-    conn = sqlite3.connect('users_db.sqlite')
-    cursor = conn.cursor()
-
-    cursor.execute('''
-            INSERT INTO Users (
-                id,
-                login,
-                password,
-                statistic_word,
-                statistic_such,
-                statistic_pri,
-                statistic_glag,
-                statistic_dn,
-            )
-        ''')
 @app.route("/")
 @app.route("/index")
 def index():
