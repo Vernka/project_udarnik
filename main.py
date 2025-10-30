@@ -86,7 +86,7 @@ def reg():
 def register_users():
     login = request.form['login']
     password = request.form['password']
-    conn = sqlite3.connect('users.db')
+    conn = sqlite3.connect('users_db.sqlite')
     cursor = conn.cursor()
     cursor.execute("INSERT INTO users (login, password) VALUES (?, ?)", (login, password))
     conn.commit()
