@@ -259,6 +259,7 @@ def exercise_dn():
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
+    f = True
     if request.method == "POST":
         button_type = request.form.get('button_type')
         if button_type == 'yes':
