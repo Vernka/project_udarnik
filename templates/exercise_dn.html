@@ -68,10 +68,20 @@
                         <a href="#" class="glas_yes" onclick="handleGlasYes(this, '/exercise_dn')">{{ elem.lower() }}</a>
                     {% endif %}
               {% endfor %}
+
+    <input type="hidden" name="button_type" id="buttonType">
+
 {% else %}
     <h1>Тренировка закончена</h1>
+    <div style="text-align: center;">
+        <h2>Статистика:</h2>
+        <p>Всего нажатий: {{ kolvo }}</p>
+        <p>Правильных нажатий: {{ yes }}</p>
+        {% if kolvo > 0 %}
+            <p>Процент правильных: {{ (yes / kolvo * 100)|round(1) }}%</p>
+        {% endif %}
+    </div>
     <a href="/index" class="link" align="right">Вернуться на главную страницу</a>
-    <a href="/statistic" class="link" align="right">Смотреть статистику</a>
 {% endif %}
 </form>
 <script>

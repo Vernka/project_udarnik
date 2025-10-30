@@ -1,10 +1,11 @@
 import flask
-from flask import render_template, url_for, redirect, request
+from flask import render_template, url_for, redirect, request, session
 import random
 import sqlite3
 
 
 app = flask.Flask(__name__)
+app.secret_key = 'my_secret_key_123'
 
 remain_words = []
 remain_such = []
@@ -77,11 +78,18 @@ def words_file():
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
     words = []
+    zn = {}
     with open('static/Все слова.txt', 'r', encoding="utf-8") as f:
         line = f.readline()
         while line:
             line = line.rstrip()
-            words.append(line)
+            if len(line.split("(")) != 1:
+                odin = line[:5]
+                words.append(odin)
+                dop = line[7:-1]
+                zn[odin] = dop
+            else:
+                words.append(line)
             line = f.readline()
     remain_words = words.copy()
     if len(remain_words) != 0:
@@ -227,6 +235,8 @@ def dn_file():
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
     dn = []
+    session['kolvo'] = 0
+    session['yes'] = 0
     with open('static/Деепричастия и наречия.txt', 'r', encoding="utf-8") as f:
         line = f.readline()
         while line:
@@ -239,7 +249,7 @@ def dn_file():
         remain_dn.remove(word)
     else:
         word = ""
-    return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas)
+    return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas, kolvo=session['kolvo'], yes=session['yes'])
 
 
 @app.route("/exercise_dn", methods=["GET", "POST"])
@@ -249,12 +259,20 @@ def exercise_dn():
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
+    if request.method == "POST":
+        button_type = request.form.get('button_type')
+        if button_type == 'yes':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+            session['yes'] = session.get('yes', 0) + 1
+        elif button_type == 'no':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+        session.modified = True
     if remain_dn != a:
         word = random.choice(remain_dn)
         remain_dn.remove(word)
     else:
         word = ""
-    return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas)
+    return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
 @app.route("/theory")
 def theory():
