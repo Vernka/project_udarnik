@@ -62,18 +62,19 @@
 <form action="/exercise_dn" method="POST">
 {% if data %}
 <a href="/index" class="link" align="right">Закончить тренировку</a>
-    <div <div style="text-align: center; align-items: center;">
+     <div style="text-align: center; margin: 250px 0;">
               {% for elem in data %}
                     {% if elem in cogl %}
                         <a class="cogl">{{ elem }}</a>
                     {% elif elem in glas and elem.islower() %}
-                        <a href="#" class="glas_no" onclick="handleGlasNo(this, '/exercise_dn')">{{ elem }}</a>
+                        <a href="#" class="glas_no" onclick="handleGlasNo(this)">{{ elem }}</a>
                     {% else %}
-                        <a href="#" class="glas_yes" onclick="handleGlasYes(this, '/exercise_dn')">{{ elem.lower() }}</a>
+                        <a href="#" class="glas_yes" onclick="handleGlasYes(this)">{{ elem.lower() }}</a>
                     {% endif %}
               {% endfor %}
     </div>
     <input type="hidden" name="button_type" id="buttonType">
+    <input type="hidden" name="current_word" value="{{ data }}">
 
 {% else %}
     <h1>Тренировка закончена</h1>
@@ -85,7 +86,7 @@
         {% if kolvo > 0 %}
             <p>Процент выполнения: {{ (yes / kolvo * 100)|int }}%</p>
             {% if (yes / kolvo * 100) == 100 %}
-                <h1>Вы настоящий профи!</h1>
+                <h1 >Вы настоящий профи!</h1>
             {% endif %}
             {% if (yes / kolvo * 100) >= 70 and (yes / kolvo * 100) < 100 %}
                 <h1>Так держать!</h1>
@@ -105,42 +106,57 @@
 {% endif %}
 </form>
 <script>
-    function handleGlasYes(button, redirectUrl) {
-        // 1. Подсвечиваем кнопку
-        button.classList.add('active');
+    function handleGlasNo(button) {
+    // 1. Подсвечиваем нажатую кнопку красным
+    button.classList.add('active');
 
-        // 2. Блокируем повторные нажатия
-        button.style.pointerEvents = 'none';
+    // 2. Находим ВСЕ кнопки в текущем слове
+    const wordContainer = button.closest('div');
+    const allButtons = wordContainer.querySelectorAll('.glas_yes, .glas_no');
 
-         // 3. Устанавливаем значение в скрытое поле
-        document.getElementById('buttonType').value = 'yes';
+    // 3. Находим правильную кнопку (с ударением) и подсвечиваем зеленым
+    allButtons.forEach(btn => {
+        if (btn.classList.contains('glas_yes')) {
+            btn.classList.add('active');
+        }
+    });
 
-        // 4. Отправляем форму через 0.5 секунды
-        setTimeout(function() {
-            document.forms[0].submit();  // Отправляем форму с POST запросом
-        }, 500);
+    // 4. Блокируем все кнопки
+    allButtons.forEach(btn => {
+        btn.style.pointerEvents = 'none';
+    });
 
-        // 5. Отменяем стандартное поведение ссылки
-        return false;
+    // 5. Устанавливаем тип кнопки и отправляем форму
+    document.getElementById('buttonType').value = 'no';
+
+    // 6. Отправляем форму через 0.5 секунды
+    setTimeout(function() {
+        document.forms[0].submit();
+    }, 500);
+
+    return false;
     }
 
-    function handleGlasNo(button, redirectUrl) {
-        // 1. Подсвечиваем кнопку
-        button.classList.add('active');
+    function handleGlasYes(button) {
+    // 1. Подсвечиваем нажатую кнопку зеленым
+    button.classList.add('active');
 
-        // 2. Блокируем повторные нажатия
-        button.style.pointerEvents = 'none';
+    // 2. Блокируем все кнопки в слове
+    const wordContainer = button.closest('div');
+    const allButtons = wordContainer.querySelectorAll('.glas_yes, .glas_no');
+    allButtons.forEach(btn => {
+        btn.style.pointerEvents = 'none';
+    });
 
-        // 3. Устанавливаем значение в скрытое поле
-        document.getElementById('buttonType').value = 'no';
+    // 3. Устанавливаем тип кнопки и отправляем форму
+    document.getElementById('buttonType').value = 'yes';
 
-        // 4. Отправляем форму через 0.5 секунды
-        setTimeout(function() {
-            document.forms[0].submit();  // Отправляем форму с POST запросом
-        }, 500);
+    // 4. Отправляем форму через 0.5 секунды
+    setTimeout(function() {
+        document.forms[0].submit();
+    }, 500);
 
-        // 5. Отменяем стандартное поведение ссылки
-        return false;
+    return false;
     }
 </script>
 </body>

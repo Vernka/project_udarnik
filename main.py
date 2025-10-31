@@ -185,7 +185,6 @@ def exercise_glag():
 
 @app.route("/dn_file")
 def dn_file():
-    global remain_dn
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
@@ -198,33 +197,34 @@ def dn_file():
             line = line.rstrip()
             dn.append(line)
             line = f.readline()
-    remain_dn = dn.copy()
-    if len(remain_dn) != 0:
-        word = random.choice(remain_dn)
-        remain_dn.remove(word)
+    session['remain_dn'] = dn.copy()
+    if session['remain_dn']:
+        word = random.choice(session['remain_dn'])
     else:
         word = ""
-    return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas, kolvo=session['kolvo'], yes=session['yes'])
+    return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas)
 
 
 @app.route("/exercise_dn", methods=["GET", "POST"])
 def exercise_dn():
     a = []
-    global remain_dn
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
     if request.method == "POST":
         button_type = request.form.get('button_type')
+        current_word = request.form.get('current_word')
+        if current_word and 'remain_dn' in session and current_word in session['remain_dn']:
+            session['remain_dn'].remove(current_word)
         if button_type == 'yes':
             session['kolvo'] = session.get('kolvo', 0) + 1
             session['yes'] = session.get('yes', 0) + 1
         elif button_type == 'no':
             session['kolvo'] = session.get('kolvo', 0) + 1
         session.modified = True
-    if remain_dn != a:
-        word = random.choice(remain_dn)
-        remain_dn.remove(word)
+
+    if 'remain_dn' in session and session['remain_dn']:
+        word = random.choice(session['remain_dn'])
     else:
         word = ""
     return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
