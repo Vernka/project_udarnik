@@ -15,34 +15,37 @@
             }
 
             .cogl {
-            display: inline-block;
-                padding: 10px 20px;
-            background: grey;
-             border-radius: 8px;
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #A9A9A9;
+                border-radius: 8px;
                 text-decoration: none;
                 color: black;
                 font-weight: bold;
             }
 
             .glas_no {
-            display: inline-block;
-                padding: 10px 20px;
-            background: grey;
-             border-radius: 8px;
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #A9A9A9;
+                border-radius: 8px;
                 text-decoration: none;
                 color: black;
                 font-weight: bold;
             }
 
             .glas_no.active {
-            background: red;
-            box-shadow: 0 0 10px red;
+                background: red;
+                box-shadow: 0 0 10px red;
             }
 
             .glas_yes {
-            display: inline-block;
-                padding: 10px 20px;
-                background: grey;
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #A9A9A9;
                 border-radius: 8px;
                 text-decoration: none;
                 color: black;
@@ -50,8 +53,8 @@
             }
 
             .glas_yes.active {
-            background: green;
-            box-shadow: 0 0 10px green;
+                background: green;
+                box-shadow: 0 0 10px green;
             }
         </style>
 </head>
@@ -59,7 +62,7 @@
 <form action="/exercise_dn" method="POST">
 {% if data %}
 <a href="/index" class="link" align="right">Закончить тренировку</a>
-    <div style="text-align: center">
+    <div <div style="text-align: center; align-items: center;">
               {% for elem in data %}
                     {% if elem in cogl %}
                         <a class="cogl">{{ elem }}</a>
@@ -75,11 +78,27 @@
 {% else %}
     <h1>Тренировка закончена</h1>
     <div style="text-align: center;">
-        <h2>Статистика:</h2>
-        <p>Всего нажатий: {{ kolvo }}</p>
-        <p>Правильных нажатий: {{ yes }}</p>
+        <h2>Статистика за тренировку:</h2>
+        <h1>{{ yes }}/{{ kolvo }}</h1>
+        <p>Правильно: {{ yes }}</p>
+        <p>Всего: {{ kolvo }}</p>
         {% if kolvo > 0 %}
-            <p>Процент правильных: {{ (yes / kolvo * 100)|round(1) }}%</p>
+            <p>Процент выполнения: {{ (yes / kolvo * 100)|int }}%</p>
+            {% if (yes / kolvo * 100) == 100 %}
+                <h1>Вы настоящий профи!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 70 and (yes / kolvo * 100) < 100 %}
+                <h1>Так держать!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 50 and (yes / kolvo * 100) < 70 %}
+                <h1>Есть куда стремиться!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 30 and (yes / kolvo * 100) < 50 %}
+                <h1>Продолжайте тренироваться!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) < 30 %}
+                <h1>Вы можете лучше!</h1>
+            {% endif %}
         {% endif %}
     </div>
     <a href="/index" class="link" align="right">Вернуться на главную страницу</a>
