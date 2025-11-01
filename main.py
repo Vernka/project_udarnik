@@ -229,11 +229,25 @@ def exercise_dn():
         word = ""
     return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
+
 @app.route("/theory")
 def theory():
-    with open('static/Слова.txt', 'r', encoding="utf-8") as f:
-        line = f.read()
-    return render_template('theory.html', data=line)
+    sections = {}
+    current_section = None
+    with open('static/Слова.txt', 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+
+            if line.startswith('# '):
+                current_section = line[2:].strip()
+                sections[current_section] = []
+            elif current_section:
+                sections[current_section].append(line)
+
+    return render_template('theory.html', sections=sections)
+
 
 @app.route("/statistic")
 def statistic():
@@ -261,4 +275,5 @@ def register_users():
 
 
 if __name__ == "__main__":
+
     app.run(port="5000", host="127.0.0.1")
