@@ -70,8 +70,8 @@
     <h1 align="left" style="margin-top: 0;"><strong>Ударник</strong></h1>
 <form action="/exercise_dn" method="POST">
 {% if data %}
-<a href="/index" class="link" align="right">Закончить тренировку</a>
-    <button type="submit" name="action" value="finish" class="link">Смотреть статистику</button>
+<a href="/index" class="link" align="right">Вернуться на главную страницу</a>
+    <button type="submit" name="action" value="finish" class="link">Закончить тренировку</button>
      <div style="text-align: center; margin: 250px 0;">
               {% for elem in data %}
                     {% if elem in cogl %}
@@ -87,16 +87,13 @@
     <input type="hidden" name="current_word" value="{{ data }}">
 
 {% else %}
-    <h1>Тренировка закончена</h1>
     <div style="text-align: center;">
-        <h2>Статистика за тренировку:</h2>
-        <h1>{{ yes }}/{{ kolvo }}</h1>
-        <p>Правильно: {{ yes }}</p>
-        <p>Всего: {{ kolvo }}</p>
+        <h1 style="margin-top: 40px;">Тренировка закончена</h1>
+        <h1 style="margin-top: 50px; margin-bottom: 30px;">{{ yes }}/{{ kolvo }}</h1>
         {% if kolvo > 0 %}
-            <p>Процент выполнения: {{ (yes / kolvo * 100)|int }}%</p>
+            <h2 style="margin-bottom: 60px;">Процент выполнения: {{ (yes / kolvo * 100)|int }}%</h2>
             {% if (yes / kolvo * 100) == 100 %}
-                <h1 >Вы настоящий профи!</h1>
+                <h1>Вы настоящий профи!</h2>
             {% endif %}
             {% if (yes / kolvo * 100) >= 70 and (yes / kolvo * 100) < 100 %}
                 <h1>Так держать!</h1>
@@ -111,8 +108,11 @@
                 <h1>Вы можете лучше!</h1>
             {% endif %}
         {% endif %}
-    </div>
+        <div style="margin-top: 50px;">
     <a href="/index" class="link" align="right">Вернуться на главную страницу</a>
+    <a href="/dn_file" class="link" align="right">Пройти ещё раз</a>
+        </div>
+    </div>
 {% endif %}
 </form>
 <script>

@@ -23,8 +23,6 @@ def load_user(user_id):
     user = session_db.get(User, user_id)
     session_db.close()
     return user
-app = flask.Flask(__name__)
-app.secret_key = 'Sanich_pomogi517'
 
 remain_words = []
 remain_such = []

@@ -4,25 +4,62 @@
         <meta charset="UTF-8">
         <title>Тренировка</title>
         <style>
-            .link {
-                display: inline-block;
-                padding: 10px 20px;
-                background: #87CEFA;
-                border-radius: 8px;
-                text-decoration: none;
-                color: black;
-                font-weight: bold;
-            }
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 500px;
+    min-height: 400px;
+    margin: 0 auto;
+}
+
+.link {
+    display: block;
+    padding: 15px 20px;
+    background: #87CEFA;
+    border-radius: 8px;
+    text-decoration: none;
+    height: 50px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    font-size: 25px;
+}
+
+.link:hover {
+    background: #4682B4;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.return {
+    display: block;
+    padding: 15px 20px;
+    background: #87CEFA;
+    border-radius: 8px;
+    text-decoration: none;
+    height: 30px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    font-size: 25px;
+}
         </style>
     </head>
     <body>
         <h1 align="left" position=fixed"><strong>Ударник</strong></h1>
+        <div class="menu-container">
         <a href="/words_file" class="link">Тренировать все слова</a>
         <a href="/such_file" class="link">Тренировать существительные</a>
-    <a href="/pri_file" class="link">Тренировать прилагательные и причастия</a>
-    <a href="/glag_file" class="link">Тренировать глаголы</a>
-    <a href="/dn_file" class="link">Тренировать деепричастия и наречия</a>
-    <a href="/index" class="link" align="right">Назад</a>
-
+        <a href="/pri_file" class="link">Тренировать прилагательные и причастия</a>
+        <a href="/glag_file" class="link">Тренировать глаголы</a>
+        <a href="/dn_file" class="link">Тренировать деепричастия и наречия</a>
+        </div>
+        <a href="/index" class="return" align="right" style="display: inline-block; margin-left: 40px; margin-top: 40px;">Назад</a>
     </body>
 </html>
