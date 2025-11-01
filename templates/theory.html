@@ -3,21 +3,85 @@
     <head>
         <meta charset="UTF-8">
         <title>Теория</title>
+
         <style>
-            .link {
-                display: inline-block;
-                padding: 10px 20px;
-                background: #87CEFA;
-                border-radius: 8px;
-                text-decoration: none;
-                color: black;
-                font-weight: bold;
-            }
-        </style>
+             body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #FFFFFF; /* фон зеленый */
+        }
+
+        .link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #87CEFA; /* кнопка назад обе */
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: black; /* слово ударник */
+        }
+
+        .section {
+            background: #def2fe;
+            padding: 20px;
+            margin: 40px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #3473D1; # заголовок
+            font-size: 24px;
+            background: #def2fe; #фон заголовка
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #3473D1; /* полоска под заголовком */
+        }
+
+       .word-list {
+    background: #def2fe; /* очень светлый голубой */
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #def2fe; /* голубая рамка */
+    columns: 2;
+    column-gap: 30px;
+}
+
+.word {
+    padding: 8px 15px;
+    background: #def2fe; /* белый фон слов */
+
+    break-inside: avoid;
+    margin-bottom: 8px;
+
+}
+    </style>
     </head>
     <body>
         <h1 align="left"><strong>Ударник</strong></h1>
-        <a href="/index" class="link" align="right">Назад</a>
-        <pre style="font-size: 25px;">{{ data }}</pre>
+
+        <a href="/index" class="link">Назад</a>
+
+    {% for section_name, words in sections.items() %}
+        <div class="section">
+            <h2 class="section-title">{{ section_name }}</h2>
+            <div class="word-list">
+                {% for word in words %}
+                <div class="word">{{ word }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+     <div style="text-align: center; margin-top: 30px;">
+        <a href="/index" class="link">Назад на главную</a>
+    </div>
     </body>
 </html>
