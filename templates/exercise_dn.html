@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>Тренировка</title>
     <style>
+            body {
+            background: #def2fe; 
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
             .link {
                 display: inline-block;
                 padding: 10px 20px;
@@ -12,13 +19,14 @@
                 text-decoration: none;
                 color: black;
                 font-weight: bold;
+                border: none;
             }
 
             .cogl {
                 display: inline-block;
                 padding: 30px 40px;
                 font-size: 35px !important;
-                background: #A9A9A9;
+                background: #FFFFFF;
                 border-radius: 8px;
                 text-decoration: none;
                 color: black;
@@ -29,7 +37,7 @@
                 display: inline-block;
                 padding: 30px 40px;
                 font-size: 35px !important;
-                background: #A9A9A9;
+                background: #FFFFFF;
                 border-radius: 8px;
                 text-decoration: none;
                 color: black;
@@ -37,15 +45,15 @@
             }
 
             .glas_no.active {
-                background: red;
-                box-shadow: 0 0 10px red;
+                background: #fd3f3f;
+                box-shadow: 0 0 10px #fd3f3f;
             }
 
             .glas_yes {
                 display: inline-block;
                 padding: 30px 40px;
                 font-size: 35px !important;
-                background: #A9A9A9;
+                background: #FFFFFF;
                 border-radius: 8px;
                 text-decoration: none;
                 color: black;
@@ -53,15 +61,17 @@
             }
 
             .glas_yes.active {
-                background: green;
-                box-shadow: 0 0 10px green;
+                background: #a9ff55;
+                box-shadow: 0 0 10px #7CFC00;
             }
         </style>
 </head>
 <body>
+    <h1 align="left" style="margin-top: 0;"><strong>Ударник</strong></h1>
 <form action="/exercise_dn" method="POST">
 {% if data %}
 <a href="/index" class="link" align="right">Закончить тренировку</a>
+    <button type="submit" name="action" value="finish" class="link">Смотреть статистику</button>
      <div style="text-align: center; margin: 250px 0;">
               {% for elem in data %}
                     {% if elem in cogl %}
