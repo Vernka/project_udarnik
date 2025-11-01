@@ -5,16 +5,172 @@
     <title>Тренировка</title>
     <style>
             body {
-<<<<<<< HEAD
             background: #def2fe;
-=======
-            background: #def2fe; 
->>>>>>> a51f685d34dea1107c405eb36fe0de01ca5350e6
             margin: 0;
             padding: 20px;
             font-family: Arial, sans-serif;
         }
 
+            .link {
+                display: inline-block;
+                padding: 10px 20px;
+                background: #87CEFA;
+                border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+                border: none;
+            }
+
+            .cogl {
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #FFFFFF;
+                border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+
+            .glas_no {
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #FFFFFF;
+                border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+
+            .glas_no.active {
+                background: #fd3f3f;
+                box-shadow: 0 0 10px #fd3f3f;
+            }
+
+            .glas_yes {
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #FFFFFF;
+                border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+
+            .glas_yes.active {
+                background: #a9ff55;
+                box-shadow: 0 0 10px #7CFC00;
+            }
+        </style>
+</head>
+<body>
+    <h1 align="left" style="margin-top: 0;"><strong>Ударник</strong></h1>
+<form action="/exercise_dn" method="POST">
+{% if data %}
+<a href="/index" class="link" align="right">Закончить тренировку</a>
+    <button type="submit" name="action" value="finish" class="link">Смотреть статистику</button>
+     <div style="text-align: center; margin: 250px 0;">
+              {% for elem in data %}
+                    {% if elem in cogl %}
+                        <a class="cogl">{{ elem }}</a>
+                    {% elif elem in glas and elem.islower() %}
+                        <a href="#" class="glas_no" onclick="handleGlasNo(this)">{{ elem }}</a>
+                    {% else %}
+                        <a href="#" class="glas_yes" onclick="handleGlasYes(this)">{{ elem.lower() }}</a>
+                    {% endif %}
+              {% endfor %}
+    </div>
+    <input type="hidden" name="button_type" id="buttonType">
+    <input type="hidden" name="current_word" value="{{ data }}">
+
+{% else %}
+    <h1>Тренировка закончена</h1>
+    <div style="text-align: center;">
+        <h2>Статистика за тренировку:</h2>
+        <h1>{{ yes }}/{{ kolvo }}</h1>
+        <p>Правильно: {{ yes }}</p>
+        <p>Всего: {{ kolvo }}</p>
+        {% if kolvo > 0 %}
+            <p>Процент выполнения: {{ (yes / kolvo * 100)|int }}%</p>
+            {% if (yes / kolvo * 100) == 100 %}
+                <h1 >Вы настоящий профи!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 70 and (yes / kolvo * 100) < 100 %}
+                <h1>Так держать!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 50 and (yes / kolvo * 100) < 70 %}
+                <h1>Есть куда стремиться!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 30 and (yes / kolvo * 100) < 50 %}
+                <h1>Продолжайте тренироваться!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) < 30 %}
+                <h1>Вы можете лучше!</h1>
+            {% endif %}
+        {% endif %}
+    </div>
+    <a href="/index" class="link" align="right">Вернуться на главную страницу</a>
+{% endif %}
+</form>
+<script>
+    function handleGlasNo(button) {
+    // 1. Подсвечиваем нажатую кнопку красным
+    button.classList.add('active');
+
+    // 2. Находим ВСЕ кнопки в текущем слове
+    const wordContainer = button.closest('div');
+    const allButtons = wordContainer.querySelectorAll('.glas_yes, .glas_no');
+
+    // 3. Находим правильную кнопку (с ударением) и подсвечиваем зеленым
+    allButtons.forEach(btn => {
+        if (btn.classList.contains('glas_yes')) {
+            btn.classList.add('active');
+        }
+    });
+
+    // 4. Блокируем все кнопки
+    allButtons.forEach(btn => {
+        btn.style.pointerEvents = 'none';
+    });
+
+    // 5. Устанавливаем тип кнопки и отправляем форму
+    document.getElementById('buttonType').value = 'no';
+
+    // 6. Отправляем форму через 0.5 секунды
+    setTimeout(function() {
+        document.forms[0].submit();
+    }, 500);
+
+    return false;
+    }
+
+    function handleGlasYes(button) {
+    // 1. Подсвечиваем нажатую кнопку зеленым
+    button.classList.add('active');
+
+    // 2. Блокируем все кнопки в слове
+    const wordContainer = button.closest('div');
+    const allButtons = wordContainer.querySelectorAll('.glas_yes, .glas_no');
+    allButtons.forEach(btn => {
+        btn.style.pointerEvents = 'none';
+    });
+
+    // 3. Устанавливаем тип кнопки и отправляем форму
+    document.getElementById('buttonType').value = 'yes';
+
+    // 4. Отправляем форму через 0.5 секунды
+    setTimeout(function() {
+        document.forms[0].submit();
+    }, 500);
+
+    return false;
+    }
+</script>
+</body>
+</html>
             .link {
                 display: inline-block;
                 padding: 10px 20px;
