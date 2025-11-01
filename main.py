@@ -13,7 +13,6 @@ db_session.global_init(True, 'db/users.db')
 app = Flask(__name__)
 app.secret_key = 'sanich_pomogi517'
 
-<<<<<<< HEAD
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'sign_in'
@@ -24,10 +23,8 @@ def load_user(user_id):
     user = session_db.get(User, user_id)
     session_db.close()
     return user
-=======
 app = flask.Flask(__name__)
 app.secret_key = 'Sanich_pomogi517'
->>>>>>> a51f685d34dea1107c405eb36fe0de01ca5350e6
 
 remain_words = []
 remain_such = []
@@ -273,10 +270,7 @@ def theory():
                 sections[current_section].append(line)
 
     return render_template('theory.html', sections=sections)
-<<<<<<< HEAD
-=======
 
->>>>>>> a51f685d34dea1107c405eb36fe0de01ca5350e6
 
 @app.route("/statistic")
 def statistic():
