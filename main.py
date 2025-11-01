@@ -5,7 +5,7 @@ import sqlite3
 
 
 app = flask.Flask(__name__)
-app.secret_key = 'my_secret_key_123'
+app.secret_key = 'Sanich_pomogi517'
 
 remain_words = []
 remain_such = []
@@ -211,7 +211,9 @@ def exercise_dn():
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
-    if request.method == "POST":
+    if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        return render_template('exercise_dn.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+    if request.method == 'POST':
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
         if current_word and 'remain_dn' in session and current_word in session['remain_dn']:
@@ -277,3 +279,4 @@ def register_users():
 if __name__ == "__main__":
 
     app.run(port="5000", host="127.0.0.1")
+
