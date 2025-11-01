@@ -3,16 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Регистрация</title>
+    <style>
+            .link {
+                display: inline-block;
+                padding: 10px 20px;
+                background: #87CEFA;
+                border-radius: 8px;
+                text-decoration: none;
+                color: black;
+                font-weight: bold;
+            }
+    </style>
 </head>
 <body>
 <h1>Форма регистрации</h1>
-<form action="/register_users" method="POST">
+{% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+{% endwith %}
+<form action="/registration" method="POST">
     <label for="login">Логин:</label>
-        <input type="text" id="login" name="login"><br><br>
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" name="password"><br><br>
-        <button type="submit">Зарегистрироваться</button>
-    </form>
+    <input type="text" id="login" name="login" placeholder="Введите логин" required>
 
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" name="password" placeholder="Введите пароль" required>
+
+    <button type="submit">Зарегистрироваться</button>
+</form>
+<a href="/index" class="link">Отмена</a>
 </body>
 </html>
