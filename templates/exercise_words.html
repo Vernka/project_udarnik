@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>Тренировка</title>
     <style>
+            body {
+            background: #def2fe;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
             .link {
                 display: inline-block;
                 padding: 10px 20px;
@@ -12,37 +19,41 @@
                 text-decoration: none;
                 color: black;
                 font-weight: bold;
+                border: none;
             }
 
             .cogl {
-            display: inline-block;
-                padding: 10px 20px;
-            background: grey;
-             border-radius: 8px;
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #FFFFFF;
+                border-radius: 8px;
                 text-decoration: none;
                 color: black;
                 font-weight: bold;
             }
 
             .glas_no {
-            display: inline-block;
-                padding: 10px 20px;
-            background: grey;
-             border-radius: 8px;
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #FFFFFF;
+                border-radius: 8px;
                 text-decoration: none;
                 color: black;
                 font-weight: bold;
             }
 
             .glas_no.active {
-            background: red;
-            box-shadow: 0 0 10px red;
+                background: #fd3f3f;
+                box-shadow: 0 0 10px #fd3f3f;
             }
 
             .glas_yes {
-            display: inline-block;
-                padding: 10px 20px;
-                background: grey;
+                display: inline-block;
+                padding: 30px 40px;
+                font-size: 35px !important;
+                background: #FFFFFF;
                 border-radius: 8px;
                 text-decoration: none;
                 color: black;
@@ -50,61 +61,137 @@
             }
 
             .glas_yes.active {
-            background: green;
-            box-shadow: 0 0 10px green;
+                background: #a9ff55;
+                box-shadow: 0 0 10px #7CFC00;
             }
+
+            .buttons-container {
+                display: flex;
+                gap: 20px;
+                justify-content: left;
+                align-items: center;
+                margin: 20px 0;
+            }
+
+            .word-meaning {
+                font-size: 30px;
+                color: #666;
+                margin-top: -200px;
+                font-style: italic;
+                text-align: center;
+                position: relative;
+            }
+
         </style>
 </head>
 <body>
+    <h1 align="left" style="margin-top: 0;"><strong>Ударник</strong></h1>
 <form action="/exercise_words" method="POST">
 {% if data %}
-<a href="/index" class="link" align="right">Закончить тренировку</a>
+    <div class="buttons-container">
+        <a href="/index" class="link" align="right" style="display: inline-block; weight: 60px; height: 30px; text-align: center; align-items: center; font-size: 20px;">Вернуться на главную страницу</a>
+        <button type="submit" name="action" value="finish" class="link" style="display: inline-block; weight: 60px; height: 50px; text-align: center; align-items: center; font-size: 20px;">Закончить тренировку</button>
+    </div>
+    <div style="text-align: center; margin: 250px 0;">
               {% for elem in data %}
                     {% if elem in cogl %}
                         <a class="cogl">{{ elem }}</a>
                     {% elif elem in glas and elem.islower() %}
-                        <a href="#" class="glas_no" onclick="handleGlasNo(this, '/exercise_words')">{{ elem }}</a>
+                        <a href="#" class="glas_no" onclick="handleGlasNo(this)">{{ elem }}</a>
                     {% else %}
-                        <a href="#" class="glas_yes" onclick="handleGlasYes(this, '/exercise_words')">{{ elem.lower() }}</a>
+                        <a href="#" class="glas_yes" onclick="handleGlasYes(this)">{{ elem.lower() }}</a>
                     {% endif %}
               {% endfor %}
+    </div>
+    <input type="hidden" name="button_type" id="buttonType">
+    <input type="hidden" name="current_word" value="{{ data }}">
+     {% if meaning %}
+    <div class="word-meaning">
+            {{ meaning }}
+        </div>
+    {% endif %}
+
 {% else %}
-    <h1>Тренировка закончена</h1>
-    <a href="/index" class="link" align="right">Вернуться на главную страницу</a>
-    <a href="/statistic" class="link" align="right">Смотреть статистику</a>
+    <div style="text-align: center;">
+        <h1 style="margin-top: 50px;">Тренировка закончена</h1>
+        <h1 style="margin-top: 50px; margin-bottom: 50px;">{{ yes }}/{{ kolvo }}</h1>
+        {% if kolvo > 0 %}
+            <h2 style="margin-bottom: 60px;">Процент выполнения: {{ (yes / kolvo * 100)|int }}%</h2>
+            {% if (yes / kolvo * 100) == 100 %}
+                <h1>Вы настоящий профи!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 70 and (yes / kolvo * 100) < 100 %}
+                <h1>Так держать!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 50 and (yes / kolvo * 100) < 70 %}
+                <h1>Есть куда стремиться!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) >= 30 and (yes / kolvo * 100) < 50 %}
+                <h1>Продолжайте тренироваться!</h1>
+            {% endif %}
+            {% if (yes / kolvo * 100) < 30 %}
+                <h1>Вы можете лучше!</h1>
+            {% endif %}
+        {% endif %}
+        <div class="buttons-container" style="display: inline-block; margin-top: 50px;">
+    <a href="/index" class="link" align="right" style="display: inline-block; weight: 60px; height: 50px; text-align: center; line-height: 50px; align-items: center; font-size: 25px;">Вернуться на главную страницу</a>
+    <a href="/dn_file" class="link" align="right" style="display: inline-block; weight: 60px; height: 50px; text-align: center; line-height: 50px; font-size: 25px;">Пройти ещё раз</a>
+        </div>
+    </div>
 {% endif %}
 </form>
 <script>
-    function handleGlasYes(button, redirectUrl) {
-        // 1. Подсвечиваем кнопку
-        button.classList.add('active');
+    function handleGlasNo(button) {
+    // 1. Подсвечиваем нажатую кнопку красным
+    button.classList.add('active');
 
-        // 2. Блокируем повторные нажатия
-        button.style.pointerEvents = 'none';
+    // 2. Находим ВСЕ кнопки в текущем слове
+    const wordContainer = button.closest('div');
+    const allButtons = wordContainer.querySelectorAll('.glas_yes, .glas_no');
 
-        // 3. Через 3 секунды переходим по ссылке
-        setTimeout(function() {
-            window.location.href = redirectUrl;
-        }, 500);
+    // 3. Находим правильную кнопку (с ударением) и подсвечиваем зеленым
+    allButtons.forEach(btn => {
+        if (btn.classList.contains('glas_yes')) {
+            btn.classList.add('active');
+        }
+    });
 
-        // 4. Отменяем стандартное поведение ссылки
-        return false;
+    // 4. Блокируем все кнопки
+    allButtons.forEach(btn => {
+        btn.style.pointerEvents = 'none';
+    });
+
+    // 5. Устанавливаем тип кнопки и отправляем форму
+    document.getElementById('buttonType').value = 'no';
+
+    // 6. Отправляем форму через 0.5 секунды
+    setTimeout(function() {
+        document.forms[0].submit();
+    }, 500);
+
+    return false;
     }
 
-    function handleGlasNo(button, redirectUrl) {
-        // 1. Подсвечиваем кнопку
-        button.classList.add('active');
+    function handleGlasYes(button) {
+    // 1. Подсвечиваем нажатую кнопку зеленым
+    button.classList.add('active');
 
-        // 2. Блокируем повторные нажатия
-        button.style.pointerEvents = 'none';
+    // 2. Блокируем все кнопки в слове
+    const wordContainer = button.closest('div');
+    const allButtons = wordContainer.querySelectorAll('.glas_yes, .glas_no');
+    allButtons.forEach(btn => {
+        btn.style.pointerEvents = 'none';
+    });
 
-        // 3. Через 3 секунды переходим по ссылке
-        setTimeout(function() {
-            window.location.href = redirectUrl;
-        }, 500);
+    // 3. Устанавливаем тип кнопки и отправляем форму
+    document.getElementById('buttonType').value = 'yes';
 
-        // 4. Отменяем стандартное поведение ссылки
-        return false;
+    // 4. Отправляем форму через 0.5 секунды
+    setTimeout(function() {
+        document.forms[0].submit();
+    }, 500);
+
+    return false;
     }
 </script>
 </body>
