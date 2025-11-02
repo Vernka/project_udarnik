@@ -1,34 +1,229 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ударник - Вход</title>
     <style>
-            .link {
-                display: inline-block;
-                padding: 10px 20px;
-                background: #87CEFA;
-                border-radius: 8px;
-                text-decoration: none;
-                color: black;
-                font-weight: bold;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #def2fe;
+            min-height: 100vh;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e9ecef;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: black;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #87CEFA;
+            background: white;
+            box-shadow: 0 0 10px rgba(135, 206, 250, 0.3);
+        }
+
+        .link {
+            display: inline-block;
+            padding: 15px 20px;
+            background: #87CEFA;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            border: 2px solid #87CEFA;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+
+        .link:hover {
+            background: #4682B4;
+            border-color: #4682B4;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(70, 130, 180, 0.3);
+        }
+
+        .submit-btn {
+            display: inline-block;
+            padding: 15px 20px;
+            background: #87CEFA;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            border: 2px solid #87CEFA;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #4682B4;
+            border-color: #4682B4;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(70, 130, 180, 0.3);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            border: 2px solid #f44336;
+            color: #c62828;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            color: #2e7d32;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            color: #1565c0;
+        }
+
+        .form-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
             }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .form-links {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .title {
+                font-size: 1.8rem;
+            }
+        }
     </style>
 </head>
 <body>
-<h1>Войти</h1>
-{% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-{% endwith %}
-<form action="/sign_in" method="POST">
-    <input type="text" name="login" placeholder="Логин" required>
-    <input type="password" name="password" placeholder="Пароль" required>
-    <button type="submit">Войти</button>
-</form>
-<a href="/index" class="link">Отмена</a>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Ударник</h1>
+            <p class="subtitle">Войдите в свой аккаунт</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/sign_in" method="POST">
+            <div class="form-group">
+                <input type="text" name="login" placeholder="Логин" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Пароль" class="form-input" required>
+            </div>
+            <button type="submit" class="submit-btn">Войти</button>
+        </form>
+
+        <div class="form-links">
+            <a href="/index" class="link">Отмена</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                container.style.transition = 'all 0.6s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 200);
+        });
+    </script>
 </body>
 </html>
