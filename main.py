@@ -45,14 +45,16 @@ def exercise():
 def exercise_word():
     return render_template("exercise_words.html")
 
+
 @app.route("/words_file")
 def words_file():
-    global remain_words
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
     words = []
     zn = {}
+    session['kolvo'] = 0
+    session['yes'] = 0
     with open('static/Все слова.txt', 'r', encoding="utf-8") as f:
         line = f.readline()
         while line:
@@ -64,37 +66,57 @@ def words_file():
                 zn[odin] = dop
             else:
                 words.append(line)
+                zn[line] = ""
             line = f.readline()
-    remain_words = words.copy()
-    if len(remain_words) != 0:
-        word = random.choice(remain_words)
-        remain_words.remove(word)
+    session['remain_words'] = words.copy()
+    session['words_zn'] = zn
+    if session['remain_words']:
+        word = random.choice(session['remain_words'])
+        meaning = zn.get(word, "")
     else:
         word = ""
-    return render_template('exercise_words.html', data=word, cogl=cogl, glas=glas)
+        meaning = ""
+    return render_template('exercise_words.html', data=word, meaning=meaning, cogl=cogl, glas=glas)
 
 
 @app.route("/exercise_words", methods=["GET", "POST"])
 def exercise_words():
-    a = []
-    global remain_words
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
-    if remain_words != a:
-        word = random.choice(remain_words)
-        remain_words.remove(word)
+
+    if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        return render_template('exercise_words.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+    if request.method == 'POST':
+        button_type = request.form.get('button_type')
+        current_word = request.form.get('current_word')
+        if current_word and 'remain_words' in session and current_word in session['remain_words']:
+            session['remain_words'].remove(current_word)
+        if button_type == 'yes':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+            session['yes'] = session.get('yes', 0) + 1
+        elif button_type == 'no':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+        session.modified = True
+    if 'remain_words' in session and session['remain_words']:
+        word = random.choice(session['remain_words'])
+        meaning = session.get('words_zn', {}).get(word, "")
     else:
         word = ""
-    return render_template('exercise_words.html', data=word, cogl=cogl, glas=glas)
+        meaning = ""
+    return render_template('exercise_words.html', data=word, meaning=meaning, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
+
+
+
 @app.route("/such_file")
 def such_file():
-    global remain_such
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
     such = []
     zn = {}
+    session['kolvo'] = 0
+    session['yes'] = 0
     with open('static/Существительные.txt', 'r', encoding="utf-8") as f:
         line = f.readline()
         while line:
@@ -106,47 +128,63 @@ def such_file():
                 zn[odin] = dop
             else:
                 such.append(line)
+                zn[line] = ""
             line = f.readline()
-    remain_such = such.copy()
-    if len(remain_such) != 0:
-        word = random.choice(remain_such)
-        remain_such.remove(word)
+    session['remain_such'] = such.copy()
+    session['such_zn'] = zn
+    if session['remain_such']:
+        word = random.choice(session['remain_such'])
+        meaning = zn.get(word, "")
     else:
         word = ""
-    return render_template('exercise_such.html', data=word, cogl=cogl, glas=glas)
+        meaning = ""
+    return render_template('exercise_such.html', data=word, meaning=meaning, cogl=cogl, glas=glas)
 
 
 @app.route("/exercise_such", methods=["GET", "POST"])
 def exercise_such():
-    a = []
-    global remain_such
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
-    if remain_such != a:
-        word = random.choice(remain_such)
-        remain_such.remove(word)
+
+    if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        return render_template('exercise_such.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+    if request.method == 'POST':
+        button_type = request.form.get('button_type')
+        current_word = request.form.get('current_word')
+        if current_word and 'remain_such' in session and current_word in session['remain_such']:
+            session['remain_such'].remove(current_word)
+        if button_type == 'yes':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+            session['yes'] = session.get('yes', 0) + 1
+        elif button_type == 'no':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+        session.modified = True
+    if 'remain_such' in session and session['remain_such']:
+        word = random.choice(session['remain_such'])
+        meaning = session.get('such_zn', {}).get(word, "")
     else:
         word = ""
-    return render_template('exercise_such.html', data=word, cogl=cogl, glas=glas)
+        meaning = ""
+    return render_template('exercise_such.html', data=word, meaning=meaning, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
 @app.route("/pri_file")
 def pri_file():
-    global remain_pri
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
     pri = []
+    session['kolvo'] = 0
+    session['yes'] = 0
     with open('static/Прилагательные и причастия.txt', 'r', encoding="utf-8") as f:
         line = f.readline()
         while line:
             line = line.rstrip()
             pri.append(line)
             line = f.readline()
-    remain_pri = pri.copy()
-    if len(remain_pri) != 0:
-        word = random.choice(remain_pri)
-        remain_pri.remove(word)
+    session['remain_pri'] = pri.copy()
+    if session['remain_pri']:
+        word = random.choice(session['remain_pri'])
     else:
         word = ""
     return render_template('exercise_pri.html', data=word, cogl=cogl, glas=glas)
@@ -155,52 +193,75 @@ def pri_file():
 @app.route("/exercise_pri", methods=["GET", "POST"])
 def exercise_pri():
     a = []
-    global remain_pri
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
-    if remain_pri != a:
-        word = random.choice(remain_pri)
-        remain_pri.remove(word)
+    if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        return render_template('exercise_pri.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+    if request.method == 'POST':
+        button_type = request.form.get('button_type')
+        current_word = request.form.get('current_word')
+        if current_word and 'remain_pri' in session and current_word in session['remain_pri']:
+            session['remain_pri'].remove(current_word)
+        if button_type == 'yes':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+            session['yes'] = session.get('yes', 0) + 1
+        elif button_type == 'no':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+        session.modified = True
+
+    if 'remain_pri' in session and session['remain_pri']:
+        word = random.choice(session['remain_pri'])
     else:
         word = ""
-    return render_template('exercise_pri.html', data=word, cogl=cogl, glas=glas)
+    return render_template('exercise_pri.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
 @app.route("/glag_file")
 def glag_file():
-    global remain_glag
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
     glag = []
+    session['kolvo'] = 0
+    session['yes'] = 0
     with open('static/Глаголы.txt', 'r', encoding="utf-8") as f:
         line = f.readline()
         while line:
             line = line.rstrip()
             glag.append(line)
             line = f.readline()
-    remain_glag = glag.copy()
-    if len(remain_glag) != 0:
-        word = random.choice(remain_glag)
-        remain_glag.remove(word)
+    session['remain_glag'] = glag.copy()
+    if session['remain_glag']:
+        word = random.choice(session['remain_glag'])
     else:
         word = ""
     return render_template('exercise_glag.html', data=word, cogl=cogl, glas=glas)
-
 
 @app.route("/exercise_glag", methods=["GET", "POST"])
 def exercise_glag():
     a = []
-    global remain_glag
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
-    if remain_glag != a:
-        word = random.choice(remain_glag)
-        remain_glag.remove(word)
+    if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        return render_template('exercise_glag.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+    if request.method == 'POST':
+        button_type = request.form.get('button_type')
+        current_word = request.form.get('current_word')
+        if current_word and 'remain_glag' in session and current_word in session['remain_glag']:
+            session['remain_glag'].remove(current_word)
+        if button_type == 'yes':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+            session['yes'] = session.get('yes', 0) + 1
+        elif button_type == 'no':
+            session['kolvo'] = session.get('kolvo', 0) + 1
+        session.modified = True
+
+    if 'remain_glag' in session and session['remain_glag']:
+        word = random.choice(session['remain_glag'])
     else:
         word = ""
-    return render_template('exercise_glag.html', data=word, cogl=cogl, glas=glas)
+    return render_template('exercise_glag.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
 @app.route("/dn_file")
 def dn_file():
@@ -249,7 +310,6 @@ def exercise_dn():
     else:
         word = ""
     return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
-
 
 @app.route("/theory")
 def theory():
@@ -348,4 +408,5 @@ def reg_users():
 if __name__ == "__main__":
 
     app.run(port="5000", host="127.0.0.1")
+
 
