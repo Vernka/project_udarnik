@@ -65,18 +65,25 @@
                 box-shadow: 0 0 10px #7CFC00;
             }
 
-            . return {
-
+            .buttons-container {
+                display: flex;
+                gap: 20px;
+                justify-content: left;
+                align-items: center;
+                margin: 20px 0;
             }
+
         </style>
 </head>
 <body>
     <h1 align="left" style="margin-top: 0;"><strong>Ударник</strong></h1>
 <form action="/exercise_dn" method="POST">
 {% if data %}
-<a href="/index" class="link" align="right">Вернуться на главную страницу</a>
-    <button type="submit" name="action" value="finish" class="link">Закончить тренировку</button>
-     <div style="text-align: center; margin: 250px 0;">
+    <div class="buttons-container">
+        <a href="/index" class="link" align="right" style="display: inline-block; weight: 60px; height: 30px; text-align: center; align-items: center; font-size: 20px;">Вернуться на главную страницу</a>
+        <button type="submit" name="action" value="finish" class="link" style="display: inline-block; weight: 60px; height: 50px; text-align: center; align-items: center; font-size: 20px;">Закончить тренировку</button>
+    </div>
+    <div style="text-align: center; margin: 250px 0;">
               {% for elem in data %}
                     {% if elem in cogl %}
                         <a class="cogl">{{ elem }}</a>
@@ -92,7 +99,7 @@
 
 {% else %}
     <div style="text-align: center;">
-        <h1 style="margin-top: 40px;">Тренировка закончена</h1>
+        <h1 style="margin-top: 50px;">Тренировка закончена</h1>
         <h1 style="margin-top: 50px; margin-bottom: 50px;">{{ yes }}/{{ kolvo }}</h1>
         {% if kolvo > 0 %}
             <h2 style="margin-bottom: 60px;">Процент выполнения: {{ (yes / kolvo * 100)|int }}%</h2>
@@ -112,9 +119,9 @@
                 <h1>Вы можете лучше!</h1>
             {% endif %}
         {% endif %}
-        <div style="display: inline-block; margin-top: 50px;">
-    <a href="/index" class="link" align="right" style="display: inline-block; weight: 60px; height: 50px; text-align: center; align-items: center; font-size: 20px;">Вернуться на главную страницу</a>
-    <a href="/dn_file" class="link" align="right" style="display: inline-block; weight: 60px; height: 50px; text-align: center; align-items: center; font-size: 20px;">Пройти ещё раз</a>
+        <div class="buttons-container" style="display: inline-block; margin-top: 50px;">
+    <a href="/index" class="link" align="right" style="display: inline-block; weight: 60px; height: 50px; text-align: center; line-height: 50px; align-items: center; font-size: 25px;">Вернуться на главную страницу</a>
+    <a href="/dn_file" class="link" align="right" style="display: inline-block; weight: 60px; height: 50px; text-align: center; line-height: 50px; font-size: 25px;">Пройти ещё раз</a>
         </div>
     </div>
 {% endif %}
