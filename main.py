@@ -8,7 +8,7 @@ import os
 import random
 import sqlite3
 os.makedirs('db', exist_ok=True)
-db_session.global_init(True, 'db/users.db')
+db_session.global_init('db/users.db')
 
 app = Flask(__name__)
 app.secret_key = 'sanich_pomogi517'
@@ -20,9 +20,13 @@ login_manager.login_view = 'sign_in'
 @login_manager.user_loader
 def load_user(user_id):
     session_db = db_session.create_session()
-    user = session_db.get(User, user_id)
-    session_db.close()
-    return user
+    try:
+        user = session_db.get(User, int(user_id))
+        return user
+    except:
+        return None
+    finally:
+        session_db.close()
 
 remain_words = []
 remain_such = []
@@ -336,21 +340,24 @@ def statistic():
     global all
     return render_template("statistic.html", great=great, all=all)
 
+
 @app.route("/sign_in", methods=["GET", "POST"])
 def sign_in():
     if request.method == "GET":
         return render_template("sign_in.html")
     elif request.method == "POST":
-        login = request.form['login']
-        password = request.form['password']
+        login = request.form.get('login', '').strip()
+        password = request.form.get('password', '').strip()
+
         if not login or not password:
             flash('Эти поля обязательны для заполнения', 'error')
             return redirect('/sign_in')
+
         session_db = db_session.create_session()
         try:
             user = session_db.query(User).filter(User.login == login).first()
             if user and check_password_hash(user.password, password):
-                login_user(user)
+                login_user(user, remember=True)
                 flash('Вход выполнен успешно', 'success')
                 return redirect("/")
             else:
@@ -368,21 +375,31 @@ def sign_out():
     flash('Вы вышли из системы', 'info')
     return redirect('/')
 
+
 @app.route("/registration", methods=["GET", "POST"])
 def reg_users():
     if request.method == "GET":
         return render_template("reg.html")
     elif request.method == "POST":
-        login = request.form['login']
-        password = request.form['password']
+        login = request.form.get('login', '').strip()
+        password = request.form.get('password', '').strip()
+
         if not login or not password:
             flash('Введите логин и пароль', 'error')
             return redirect('/registration')
+
+        if len(login) < 3:
+            flash('Логин должен содержать не менее 3 символов', 'error')
+            return redirect('/registration')
+
+        if len(password) < 4:
+            flash('Пароль должен содержать не менее 4 символов', 'error')
+            return redirect('/registration')
+
         session_db = db_session.create_session()
         try:
             existing_user = session_db.query(User).filter(User.login == login).first()
             if existing_user:
-                session_db.close()
                 flash('Пользователь с таким логином уже существует', 'error')
                 return redirect('/registration')
 
@@ -394,7 +411,9 @@ def reg_users():
             session_db.add(new_user)
             session_db.commit()
 
-            login_user(new_user)
+            login_user(new_user, remember=True)
+            # Очищаем все flash-сообщения при успешной регистрации
+            session.pop('_flashes', None)
             flash('Регистрация прошла успешно!', 'success')
             return redirect("/")
 
@@ -406,7 +425,5 @@ def reg_users():
             session_db.close()
 
 if __name__ == "__main__":
-
-    app.run(port="5000", host="127.0.0.1")
-
+    app.run(port="5000", host="127.0.0.1", debug=True)
 

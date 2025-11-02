@@ -195,8 +195,8 @@
         <div class="header">
             <div class="auth-buttons">
                 {% if current_user.is_authenticated %}
-                    <a href="/statistic" class="link">📊 Статистика</a>
-                    <a href="/sign_out" class="link">🚪 Выйти</a>
+                    <a href="/statistic" class="link" style="display: inline-block; weight: 60px; height: 50px; text-align: center; align-items: center; font-size: 20px;">📊 Статистика</a>
+                    <a href="/sign_out" class="link" style="display: inline-block; weight: 60px; height: 50px; text-align: center; align-items: center; font-size: 20px;">🚪 Выйти</a>
                 {% else %}
                     <a href="/sign_in" class="link" style="display: inline-block; weight: 60px; height: 50px; text-align: center; align-items: center; font-size: 20px;">🔐 Войти</a>
                     <a href="/registration" class="link" style="display: inline-block; weight: 60px; height: 50px; text-align: center; align-items: center; font-size: 20px;">📝 Регистрация</a>

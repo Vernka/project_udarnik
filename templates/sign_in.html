@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ударник - Вход</title>
+    <title>Вход</title>
     <style>
         * {
             margin: 0;
@@ -140,19 +140,12 @@
             color: #2e7d32;
         }
 
-        .alert-info {
-            background: #e3f2fd;
-            border: 2px solid #2196f3;
-            color: #1565c0;
-        }
-
         .form-links {
             display: flex;
             gap: 15px;
             margin-top: 20px;
         }
 
-        /* Адаптивность */
         @media (max-width: 768px) {
             .container {
                 padding: 30px 20px;
@@ -192,7 +185,11 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% if category == 'error' %}
+                        <div class="alert alert-error">
+                            {{ message }}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -209,6 +206,7 @@
 
         <div class="form-links">
             <a href="/index" class="link">Отмена</a>
+            <a href="/registration" class="link">Регистрация</a>
         </div>
     </div>
 
