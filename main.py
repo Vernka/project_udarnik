@@ -41,7 +41,17 @@ all = 0
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template("index.html")
+    stats = None
+    if current_user.is_authenticated:
+        try:
+            stats = get_statistic(current_user)
+        except Exception as e:
+            print(f"Ошибка загрузки статистики: {e}")
+            stats = {
+                'general': {'total_answers': 0, 'total_correct': 0, 'success_rate': 0, 'total_sessions': 0},
+                'by_type': {}
+            }
+    return render_template("index.html", stats=stats)
 
 @app.route("/exercise")
 def exercise():

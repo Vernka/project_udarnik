@@ -216,31 +216,27 @@
                 <a href="/theory" class="link" style="display: inline-block; weight: 60px; height: 70px; text-align: center; font-size: 25px;">📚 Смотреть теорию</a>
             </div>
 
-            {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated and stats %}
             <div class="user-stats">
                 <h3 class="stats-title">Ваша статистика</h3>
                 <div class="stats-grid">
                     <div class="stat-item">
-                        <div class="stat-value">{{ current_user.all_words or 0 }}</div>
-                        <div class="stat-label">Всего слов</div>
+                        <div class="stat-value">{{ stats.general.total_answers }}</div>
+                        <div class="stat-label">Всего ответов</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value">{{ current_user.all_yes or 0 }}</div>
+                        <div class="stat-value">{{ stats.general.total_correct }}</div>
                         <div class="stat-label">Правильно</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value">
-                            {% if current_user.all_words and current_user.all_words > 0 %}
-                                {{ ((current_user.all_yes / current_user.all_words) * 100)|round|default(0) }}%
-                            {% else %}
-                                0%
-                            {% endif %}
+                            {{ stats.general.success_rate }}%
                         </div>
                         <div class="stat-label">Точность</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value">{{ current_user.great or 0 }}</div>
-                        <div class="stat-label">Рекорд</div>
+                        <div class="stat-value">{{ stats.general.total_sessions }}</div>
+                        <div class="stat-label">Сессии</div>
                     </div>
                 </div>
             </div>

@@ -31,10 +31,16 @@ def update_statistic(db_session, user, exercise_type, is_correct):
     fresh_user = db_session.query(User).filter(User.id == user.id).first()
     if not fresh_user:
         return
+
+    # Увеличиваем счетчик сессий при первом ответе в сессии
+    # Это простой способ - каждый ответ считается как новая сессия
+    # Для более сложной логики нужно отслеживать время между ответами
+    fresh_user.total_sessions = (fresh_user.total_sessions or 0) + 1
+
     fresh_user.total_answers = (fresh_user.total_answers or 0) + 1
     if is_correct:
         fresh_user.total_correct = (fresh_user.total_correct or 0) + 1
-        
+
     if exercise_type == 'words':
         fresh_user.words_total = (fresh_user.words_total or 0) + 1
         if is_correct:
