@@ -80,11 +80,11 @@ def get_statistic(user):
     }
 
     exercises = [
-        ('words', 'Слова', user.words_correct or 0, user.words_total or 0),
+        ('words', 'Все слова', user.words_correct or 0, user.words_total or 0),
         ('such', 'Существительные', user.such_correct or 0, user.such_total or 0),
-        ('pri', 'Прилагательные', user.pri_correct or 0, user.pri_total or 0),
+        ('pri', 'Прилагательные и причастия', user.pri_correct or 0, user.pri_total or 0),
         ('glag', 'Глаголы', user.glag_correct or 0, user.glag_total or 0),
-        ('dn', 'Ударения', user.dn_correct or 0, user.dn_total or 0)
+        ('dn', 'Деепричастия и наречия', user.dn_correct or 0, user.dn_total or 0)
     ]
 
     for ex_type, name, correct, total in exercises:
