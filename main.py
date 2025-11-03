@@ -1,19 +1,13 @@
-
 from flask import Flask, request, render_template, redirect, url_for, session, flash
-from flask_login import logout_user, LoginManager, login_user, current_user
+from flask_login import logout_user, LoginManager, login_user, current_user, login_required
 import db_session
-from Classes import User
-from flask import Flask
-from flask_login import LoginManager, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import random
-from Classes import User
-from Classes import update_statistic
-from Classes import get_statistic
+from Classes import User, update_statistic, get_statistic
 import sqlite3
-os.makedirs('db', exist_ok=True)
 
+os.makedirs('db', exist_ok=True)
 db_session.global_init('db/users.db')
 
 app = Flask(__name__)
@@ -444,7 +438,7 @@ def sign_in():
 
         if not login or not password:
             flash('Эти поля обязательны для заполнения', 'error')
-            return redirect('/sign_in')
+            return render_template("sign_in.html")
 
         session_db = db_session.create_session()
         try:
@@ -455,17 +449,16 @@ def sign_in():
                 return redirect("/")
             else:
                 flash('Неверный логин или пароль', 'error')
-                return redirect('/sign_in')
+                return render_template("sign_in.html")
         except Exception as e:
             flash(f'Ошибка при входе: {str(e)}', 'error')
-            return redirect('/sign_in')
+            return render_template("sign_in.html")
         finally:
             session_db.close()
 
 @app.route('/sign_out')
 def sign_out():
     logout_user()
-    flash('Вы вышли из системы', 'info')
     return redirect('/')
 
 
@@ -479,22 +472,22 @@ def reg_users():
 
         if not login or not password:
             flash('Введите логин и пароль', 'error')
-            return redirect('/registration')
+            return render_template("reg.html")
 
         if len(login) < 3:
             flash('Логин должен содержать не менее 3 символов', 'error')
-            return redirect('/registration')
+            return render_template("reg.html")
 
         if len(password) < 4:
             flash('Пароль должен содержать не менее 4 символов', 'error')
-            return redirect('/registration')
+            return render_template("reg.html")
 
         session_db = db_session.create_session()
         try:
             existing_user = session_db.query(User).filter(User.login == login).first()
             if existing_user:
                 flash('Пользователь с таким логином уже существует', 'error')
-                return redirect('/registration')
+                return render_template("reg.html")
 
             new_user = User(
                 login=login,
@@ -505,15 +498,13 @@ def reg_users():
             session_db.commit()
 
             login_user(new_user, remember=True)
-            # Очищаем все flash-сообщения при успешной регистрации
-            session.pop('_flashes', None)
             flash('Регистрация прошла успешно!', 'success')
             return redirect("/")
 
         except Exception as e:
             session_db.rollback()
             flash(f'Ошибка при регистрации: {str(e)}', 'error')
-            return redirect('/registration')
+            return render_template("reg.html")
         finally:
             session_db.close()
 

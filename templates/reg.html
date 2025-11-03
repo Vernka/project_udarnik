@@ -126,17 +126,6 @@
             margin-bottom: 20px;
             text-align: center;
             font-weight: bold;
-            position: relative;
-            transition: all 0.5s ease;
-        }
-
-        .alert.hiding {
-            opacity: 0;
-            transform: translateY(-20px);
-            margin-bottom: 0;
-            padding: 0;
-            height: 0;
-            overflow: hidden;
         }
 
         .alert-error {
@@ -149,12 +138,6 @@
             background: #e8f5e8;
             border: 2px solid #4caf50;
             color: #2e7d32;
-        }
-
-        .alert-info {
-            background: #e3f2fd;
-            border: 2px solid #2196f3;
-            color: #1565c0;
         }
 
         .form-links {
@@ -207,25 +190,25 @@
             <p class="subtitle">Создайте новый аккаунт</p>
         </div>
 
-        <div id="flash-messages">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}" id="alert-{{ loop.index }}">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        <div class="alert alert-error">
                             {{ message }}
                         </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
         <form action="/registration" method="POST" id="registration-form">
             <div class="form-group">
-                <label for="login"></label>
+                <label for="login">Логин</label>
                 <input type="text" id="login" name="login" placeholder="Введите логин" class="form-input" required>
             </div>
             <div class="form-group">
-                <label for="password"></label>
+                <label for="password">Пароль</label>
                 <input type="password" id="password" name="password" placeholder="Введите пароль" class="form-input" required>
             </div>
             <button type="submit" class="submit-btn">Зарегистрироваться</button>
@@ -249,55 +232,8 @@
                 container.style.transform = 'translateY(0)';
             }, 200);
 
-            // Функция для скрытия сообщений
-            function hideAlerts() {
-                const alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    alert.classList.add('hiding');
-                    setTimeout(() => {
-                        if (alert.parentNode) {
-                            alert.remove();
-                        }
-                    }, 500);
-                });
-            }
-
-            // Скрываем сообщения при успешной отправке формы
-            const registrationForm = document.getElementById('registration-form');
-            registrationForm.addEventListener('submit', function() {
-                // Проверяем, есть ли сообщения об успехе (значит регистрация прошла успешно)
-                const successAlerts = document.querySelectorAll('.alert-success');
-                if (successAlerts.length > 0) {
-                    // Если есть успешные сообщения, скрываем все алерты
-                    setTimeout(hideAlerts, 1000); // Даем пользователю прочитать сообщение
-                }
-            });
-
-            // Автоматическое скрытие сообщений об ошибке через 5 секунд
-            const errorAlerts = document.querySelectorAll('.alert-error, .alert-info');
-            errorAlerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.classList.add('hiding');
-                    setTimeout(() => {
-                        if (alert.parentNode) {
-                            alert.remove();
-                        }
-                    }, 500);
-                }, 5000);
-            });
-
-            // Сообщения об успехе скрываются только после перехода или через 3 секунды
-            const successAlerts = document.querySelectorAll('.alert-success');
-            successAlerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.classList.add('hiding');
-                    setTimeout(() => {
-                        if (alert.parentNode) {
-                            alert.remove();
-                        }
-                    }, 500);
-                }, 3000);
-            });
+            // Сообщения об ошибках остаются до успешной регистрации
+            // Они исчезнут только когда пользователь будет перенаправлен на главную страницу
         });
     </script>
 </body>
