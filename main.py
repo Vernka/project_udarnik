@@ -1,13 +1,19 @@
-import flask
+
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 from flask_login import logout_user, LoginManager, login_user, current_user
 import db_session
 from Classes import User
+from flask import Flask
+from flask_login import LoginManager, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import random
+from Classes import User
+from Classes import update_statistic
+from Classes import get_statistic
 import sqlite3
 os.makedirs('db', exist_ok=True)
+
 db_session.global_init('db/users.db')
 
 app = Flask(__name__)
@@ -20,13 +26,9 @@ login_manager.login_view = 'sign_in'
 @login_manager.user_loader
 def load_user(user_id):
     session_db = db_session.create_session()
-    try:
-        user = session_db.get(User, int(user_id))
-        return user
-    except:
-        return None
-    finally:
-        session_db.close()
+    user = session_db.get(User, user_id)
+    session_db.close()
+    return user
 
 remain_words = []
 remain_such = []
@@ -48,7 +50,6 @@ def exercise():
 @app.route("/exercise_word")
 def exercise_word():
     return render_template("exercise_words.html")
-
 
 @app.route("/words_file")
 def words_file():
@@ -90,26 +91,46 @@ def exercise_words():
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
-        return render_template('exercise_words.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+        return render_template('exercise_words.html', data=None, yes=session.get('yes', 0),
+                               kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+
     if request.method == 'POST':
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
+
         if current_word and 'remain_words' in session and current_word in session['remain_words']:
             session['remain_words'].remove(current_word)
+
         if button_type == 'yes':
             session['kolvo'] = session.get('kolvo', 0) + 1
             session['yes'] = session.get('yes', 0) + 1
+
+            # Сохраняем в БД правильный ответ
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'words', True)
+                db_sess.close()
+
         elif button_type == 'no':
             session['kolvo'] = session.get('kolvo', 0) + 1
+
+            # Сохраняем в БД неправильный ответ
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'words', False)
+                db_sess.close()
+
         session.modified = True
+
     if 'remain_words' in session and session['remain_words']:
         word = random.choice(session['remain_words'])
         meaning = session.get('words_zn', {}).get(word, "")
     else:
         word = ""
         meaning = ""
-    return render_template('exercise_words.html', data=word, meaning=meaning, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
+    return render_template('exercise_words.html', data=word, meaning=meaning, cogl=cogl, glas=glas,
+                           kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
 
 @app.route("/such_file")
@@ -152,25 +173,46 @@ def exercise_such():
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
-        return render_template('exercise_such.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+        return render_template('exercise_such.html', data=None, yes=session.get('yes', 0),
+                               kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+
     if request.method == 'POST':
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
+
         if current_word and 'remain_such' in session and current_word in session['remain_such']:
             session['remain_such'].remove(current_word)
+
         if button_type == 'yes':
             session['kolvo'] = session.get('kolvo', 0) + 1
             session['yes'] = session.get('yes', 0) + 1
+
+            # Сохраняем в БД правильный ответ
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'such', True)
+                db_sess.close()
+
         elif button_type == 'no':
             session['kolvo'] = session.get('kolvo', 0) + 1
+
+            # Сохраняем в БД неправильный ответ
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'such', False)
+                db_sess.close()
+
         session.modified = True
+
     if 'remain_such' in session and session['remain_such']:
         word = random.choice(session['remain_such'])
         meaning = session.get('such_zn', {}).get(word, "")
     else:
         word = ""
         meaning = ""
-    return render_template('exercise_such.html', data=word, meaning=meaning, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
+
+    return render_template('exercise_such.html', data=word, meaning=meaning, cogl=cogl, glas=glas,
+                           kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
 @app.route("/pri_file")
 def pri_file():
@@ -210,8 +252,17 @@ def exercise_pri():
         if button_type == 'yes':
             session['kolvo'] = session.get('kolvo', 0) + 1
             session['yes'] = session.get('yes', 0) + 1
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'pri', True)
+                db_sess.close()
+
         elif button_type == 'no':
             session['kolvo'] = session.get('kolvo', 0) + 1
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'pri', False)
+                db_sess.close()
         session.modified = True
 
     if 'remain_pri' in session and session['remain_pri']:
@@ -241,32 +292,52 @@ def glag_file():
         word = ""
     return render_template('exercise_glag.html', data=word, cogl=cogl, glas=glas)
 
+
 @app.route("/exercise_glag", methods=["GET", "POST"])
 def exercise_glag():
-    a = []
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
+
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
-        return render_template('exercise_glag.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+        return render_template('exercise_glag.html', data=None, yes=session.get('yes', 0),
+                               kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+
     if request.method == 'POST':
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
+
         if current_word and 'remain_glag' in session and current_word in session['remain_glag']:
             session['remain_glag'].remove(current_word)
+
         if button_type == 'yes':
             session['kolvo'] = session.get('kolvo', 0) + 1
             session['yes'] = session.get('yes', 0) + 1
+
+            # Сохраняем в БД правильный ответ
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'glag', True)
+                db_sess.close()
+
         elif button_type == 'no':
             session['kolvo'] = session.get('kolvo', 0) + 1
+
+            # Сохраняем в БД неправильный ответ
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'glag', False)
+                db_sess.close()
+
         session.modified = True
 
     if 'remain_glag' in session and session['remain_glag']:
         word = random.choice(session['remain_glag'])
     else:
         word = ""
-    return render_template('exercise_glag.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
 
+    return render_template('exercise_glag.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0),
+                           yes=session.get('yes', 0))
 @app.route("/dn_file")
 def dn_file():
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
@@ -291,29 +362,49 @@ def dn_file():
 
 @app.route("/exercise_dn", methods=["GET", "POST"])
 def exercise_dn():
-    a = []
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
+
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
-        return render_template('exercise_dn.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0), cogl=cogl, glas=glas)
+        return render_template('exercise_dn.html', data=None, yes=session.get('yes', 0), kolvo=session.get('kolvo', 0),
+                               cogl=cogl, glas=glas)
+
     if request.method == 'POST':
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
+
         if current_word and 'remain_dn' in session and current_word in session['remain_dn']:
             session['remain_dn'].remove(current_word)
+
         if button_type == 'yes':
             session['kolvo'] = session.get('kolvo', 0) + 1
             session['yes'] = session.get('yes', 0) + 1
+
+            # Сохраняем в БД правильный ответ
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'dn', True)
+                db_sess.close()
+
         elif button_type == 'no':
             session['kolvo'] = session.get('kolvo', 0) + 1
+
+            # Сохраняем в БД неправильный ответ
+            if current_user.is_authenticated:
+                db_sess = db_session.create_session()
+                update_statistic(db_sess, current_user, 'dn', False)
+                db_sess.close()
+
         session.modified = True
 
     if 'remain_dn' in session and session['remain_dn']:
         word = random.choice(session['remain_dn'])
     else:
         word = ""
-    return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
+
+    return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas, kolvo=session.get('kolvo', 0),
+                           yes=session.get('yes', 0))
 
 @app.route("/theory")
 def theory():
@@ -333,12 +424,14 @@ def theory():
 
     return render_template('theory.html', sections=sections)
 
-
 @app.route("/statistic")
+@login_required
 def statistic():
-    global great
-    global all
-    return render_template("statistic.html", great=great, all=all)
+    try:
+        stats = get_statistic(current_user)
+        return render_template('statistic.html', stats=stats)
+    except Exception as e:
+        return f"Ошибка при загрузке статистики: {str(e)}"
 
 
 @app.route("/sign_in", methods=["GET", "POST"])
@@ -426,4 +519,5 @@ def reg_users():
 
 if __name__ == "__main__":
     app.run(port="5000", host="127.0.0.1", debug=True)
+
 
