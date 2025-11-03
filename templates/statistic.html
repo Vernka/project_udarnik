@@ -1,27 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Статистика</title>
+    <title>Моя статистика</title>
     <style>
-            .link {
-                display: inline-block;
-                padding: 10px 20px;
-                background: #87CEFA;
-                border-radius: 8px;
-                text-decoration: none;
-                color: black;
-                font-weight: bold;
-            }
+        body {
+            background: #def2fe;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            background: #87CEFA;
+            height: 100%;
+            border-radius: 10px;
+        }
+        .link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #87CEFA;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            border: none;
+            margin: 10px;
+        }
     </style>
 </head>
 <body>
-<h1>Статистика за всё время: {{ great }} {{ all }}</h1>
-<p>Все слова:</p>
-<p>Существительные:</p>
-<p>Прилагательные и причастия:</p>
-<p>Глаголы:</p>
-<p>Деепричастия и наречия:</p>
-<a href="/index" class="link" align="right">Назад</a>
+    <h1>Моя статистика</h1>
+
+    <div class="stat-card">
+        <h2>Общая статистика</h2>
+        <p>Правильных ответов: {{ stats.general.total_correct }}/{{ stats.general.total_answers }}</p>
+        <p>Процент правильных: {{ stats.general.success_rate }}%</p>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ stats.general.success_rate }}%"></div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <h2>По типам упражнений</h2>
+        {% for ex_type, data in stats.by_type.items() %}
+        <div style="margin: 15px 0;">
+            <h3>{{ data.name }}</h3>
+            <p>{{ data.correct }}/{{ data.total }} ({{ data.success_rate }}%)</p>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ data.success_rate }}%"></div>
+            </div>
+        </div>
+        {% else %}
+        <p>Статистика по упражнениям пока отсутствует</p>
+        {% endfor %}
+    </div>
+
+    <a href="/index" class="link">На главную</a>
 </body>
 </html>
