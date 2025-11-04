@@ -9,6 +9,7 @@ class User(SqlAlchemyBase, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     login = Column(String(100), nullable=False)
     password = Column(String(200), nullable=False)
+    adedusers = Column(String(10), nullable=True, default='False')
     total_sessions = Column(Integer, default=0)
     total_correct = Column(Integer, default=0)
     total_answers = Column(Integer, default=0)
@@ -95,5 +96,4 @@ def get_statistic(user):
                 'total': total,
                 'success_rate': success_rate
             }
-
     return stats
