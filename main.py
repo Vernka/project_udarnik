@@ -8,8 +8,6 @@ from Classes import User
 from Classes import update_statistic
 from Classes import update_user_sessions
 from Classes import get_statistic
-import sqlite3
-import datetime
 
 os.makedirs('db', exist_ok=True)
 db_session.global_init('db/users.db')
@@ -28,16 +26,6 @@ def load_user(user_id):
     user = session_db.get(User, user_id)
     session_db.close()
     return user
-
-
-remain_words = []
-remain_such = []
-remain_pri = []
-remain_glag = []
-remain_dn = []
-great = 0
-all = 0
-
 
 @app.route("/")
 @app.route("/index")

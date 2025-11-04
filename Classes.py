@@ -27,7 +27,6 @@ class User(SqlAlchemyBase, UserMixin):
 
 
 def update_statistic(db_session, user, exercise_type, is_correct):
-    """Обновляет статистику пользователя в БД"""
     fresh_user = db_session.query(User).filter(User.id == user.id).first()
     if not fresh_user:
         return
@@ -77,7 +76,6 @@ def update_user_sessions(user_id):
 
 
 def get_statistic(user):
-    """Возвращает статистику пользователя из БД"""
     total_correct = user.total_correct or 0
     total_answers = user.total_answers or 0
 
