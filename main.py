@@ -53,7 +53,7 @@ def words_file():
         all_words = [line.strip() for line in f]
 
     session['all_words_count'] = len(all_words)
-    session['used_words'] = []  
+    session['used_words'] = []
     session['kolvo'] = 0
     session['yes'] = 0
     session.modified = True
@@ -465,6 +465,6 @@ def reg_users():
         finally:
             session_db.close()
 
+
 if __name__ == "__main__":
     app.run(port="5000", host="127.0.0.1", debug=True)
-
