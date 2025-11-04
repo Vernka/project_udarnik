@@ -28,15 +28,18 @@
             border-radius: 10px;
         }
         .link {
-            display: inline-block;
-            padding: 10px 20px;
+            display: block;
+            padding: 15px 20px;
             background: #87CEFA;
             border-radius: 8px;
             text-decoration: none;
+            height: 30px;
             color: black;
             font-weight: bold;
-            border: none;
-            margin: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 25px;
         }
     </style>
 </head>
@@ -67,6 +70,6 @@
         {% endfor %}
     </div>
 
-    <a href="/index" class="link">На главную</a>
+    <a href="/index" class="link" align="center" style="display: inline-block; margin-top: 20px;">На главную</a>
 </body>
 </html>
