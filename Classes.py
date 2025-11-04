@@ -63,6 +63,18 @@ def update_statistic(db_session, user, exercise_type, is_correct):
     fresh_user.last_active = datetime.datetime.utcnow()
     db_session.commit()
 
+def update_user_sessions(user_id):
+    from db_session import create_session
+    db_sess = create_session()
+    try:
+        fresh_user = db_sess.query(User).filter(User.id == user_id).first()
+        if fresh_user:
+            fresh_user.total_sessions = (fresh_user.total_sessions or 0) + 1
+            fresh_user.last_active = datetime.datetime.utcnow()
+            db_sess.commit()
+    finally:
+        db_sess.close()
+
 
 def get_statistic(user):
     """Возвращает статистику пользователя из БД"""

@@ -6,8 +6,10 @@ import os
 import random
 from Classes import User
 from Classes import update_statistic
+from Classes import update_user_sessions
 from Classes import get_statistic
 import sqlite3
+import datetime
 
 os.makedirs('db', exist_ok=True)
 db_session.global_init('db/users.db')
@@ -75,6 +77,9 @@ def exercise_words():
     used_words = session.get('used_words', [])
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
+
         return render_template('exercise_words.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -102,8 +107,10 @@ def exercise_words():
     if current_index < len(all_words):
         word = all_words[current_index]
         if '(' in word:
-            word = word.split('(')[0]
+            word = word.split(' (')[0]
     else:
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
         return render_template('exercise_words.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -138,6 +145,9 @@ def exercise_such():
     used_such = session.get('used_such', [])
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
+
         return render_template('exercise_such.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -166,8 +176,10 @@ def exercise_such():
     if current_index < len(all_such):
         word = all_such[current_index]
         if '(' in word:
-            word = word.split('(')[0]
+            word = word.split(' (')[0]
     else:
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
         return render_template('exercise_such.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -202,6 +214,9 @@ def exercise_pri():
     used_pri = session.get('used_pri', [])
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
+
         return render_template('exercise_pri.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -231,6 +246,8 @@ def exercise_pri():
         if '(' in word:
             word = word.split('(')[0]
     else:
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
         return render_template('exercise_pri.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -265,6 +282,9 @@ def exercise_glag():
     used_glag = session.get('used_glag', [])
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
+
         return render_template('exercise_glag.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -294,6 +314,8 @@ def exercise_glag():
         if '(' in word:
             word = word.split('(')[0]
     else:
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
         return render_template('exercise_glag.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -328,6 +350,9 @@ def exercise_dn():
     used_dn = session.get('used_dn', [])
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
+
         return render_template('exercise_dn.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
@@ -359,6 +384,8 @@ def exercise_dn():
         if '(' in word:
             word = word.split('(')[0]
     else:
+        if current_user.is_authenticated:
+            update_user_sessions(current_user.id)
         return render_template('exercise_dn.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
