@@ -4,7 +4,9 @@ import db_session
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import random
-from Classes import User, update_statistic, get_statistic
+from Classes import User
+from Classes import update_statistic
+from Classes import get_statistic
 import sqlite3
 
 os.makedirs('db', exist_ok=True)
