@@ -19,12 +19,14 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'sign_in'
 
+
 @login_manager.user_loader
 def load_user(user_id):
     session_db = db_session.create_session()
     user = session_db.get(User, user_id)
     session_db.close()
     return user
+
 
 remain_words = []
 remain_such = []
@@ -34,26 +36,32 @@ remain_dn = []
 great = 0
 all = 0
 
+
 @app.route("/")
 @app.route("/index")
 def index():
     return render_template("index.html")
 
+
 @app.route("/exercise")
 def exercise():
     return render_template("exercise.html")
 
+
 @app.route("/exercise_word")
 def exercise_word():
     return render_template("exercise_words.html")
+
 
 @app.route("/words_file")
 def words_file():
     with open('static/Все слова.txt', 'r', encoding="utf-8") as f:
         all_words = [line.strip() for line in f]
 
-    session['all_words_count'] = len(all_words)
+    random.shuffle(all_words)
+    session['all_words'] = all_words
     session['used_words'] = []
+    session['current_index'] = 0
     session['kolvo'] = 0
     session['yes'] = 0
     session.modified = True
@@ -62,20 +70,15 @@ def words_file():
 
 @app.route("/exercise_words", methods=["GET", "POST"])
 def exercise_words():
-    if 'all_words_count' not in session:
-        return redirect(url_for('words_file'))
-    with open('static/Все слова.txt', 'r', encoding="utf-8") as f:
-        all_words = [line.strip() for line in f]
-
+    all_words = session.get('all_words', [])
+    current_index = session.get('current_index', 0)
     used_words = session.get('used_words', [])
-
-    available_words = [word for word in all_words if word not in used_words]
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
         return render_template('exercise_words.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'button_type' in request.form:
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
 
@@ -86,59 +89,59 @@ def exercise_words():
         session['kolvo'] = session.get('kolvo', 0) + 1
         if button_type == 'yes':
             session['yes'] = session.get('yes', 0) + 1
+
+        session['current_index'] = current_index + 1
         session.modified = True
 
         if current_user.is_authenticated:
             db_sess = db_session.create_session()
             update_statistic(db_sess, current_user, 'words', button_type == 'yes')
             db_sess.close()
+        return redirect(url_for('exercise_words'))
 
-    if available_words:
-        word = random.choice(available_words)
+    if current_index < len(all_words):
+        word = all_words[current_index]
         if '(' in word:
-            meaning = word.split('(')[1].rstrip(')')
             word = word.split('(')[0]
-        else:
-            meaning = ""
     else:
-        word = ""
-        meaning = ""
+        return render_template('exercise_words.html', data=None,
+                               yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
 
-    return render_template('exercise_words.html', data=word, meaning=meaning, cogl=cogl, glas=glas,
+    return render_template('exercise_words.html', data=word, cogl=cogl, glas=glas,
                            kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
+
+
 @app.route("/such_file")
 def such_file():
     with open('static/Существительные.txt', 'r', encoding="utf-8") as f:
         all_words = [line.strip() for line in f]
 
-    session['all_such_count'] = len(all_words)
+    random.shuffle(all_words)
+    session['all_such'] = all_words
     session['used_such'] = []
+    session['such_current_index'] = 0
     session['kolvo'] = 0
     session['yes'] = 0
     session.modified = True
 
     return redirect(url_for('exercise_such'))
 
+
 @app.route("/exercise_such", methods=["GET", "POST"])
 def exercise_such():
-    if 'all_such_count' not in session:
-        return redirect(url_for('such_file'))
-    with open('static/Существительные.txt', 'r', encoding="utf-8") as f:
-        all_such = [line.strip() for line in f]
-
+    all_such = session.get('all_such', [])
+    current_index = session.get('such_current_index', 0)
     used_such = session.get('used_such', [])
-
-    available_such = [word for word in all_such if word not in used_such]
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
         return render_template('exercise_such.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'button_type' in request.form:
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
 
@@ -149,6 +152,8 @@ def exercise_such():
         session['kolvo'] = session.get('kolvo', 0) + 1
         if button_type == 'yes':
             session['yes'] = session.get('yes', 0) + 1
+
+        session['such_current_index'] = current_index + 1
         session.modified = True
 
         if current_user.is_authenticated:
@@ -156,31 +161,33 @@ def exercise_such():
             update_statistic(db_sess, current_user, 'such', button_type == 'yes')
             db_sess.close()
 
-    if available_such:
-        word = random.choice(available_such)
+        return redirect(url_for('exercise_such'))
+
+    if current_index < len(all_such):
+        word = all_such[current_index]
         if '(' in word:
-            meaning = word.split('(')[1].rstrip(')')
             word = word.split('(')[0]
-        else:
-            meaning = ""
     else:
-        word = ""
-        meaning = ""
+        return render_template('exercise_such.html', data=None,
+                               yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
     glas = ["а", "е", "ё", "и", "о", "у", "ы", "э", "ю", "я"]
 
-    return render_template('exercise_such.html', data=word, meaning=meaning, cogl=cogl, glas=glas,
+    return render_template('exercise_such.html', data=word, cogl=cogl, glas=glas,
                            kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
+
 
 @app.route("/pri_file")
 def pri_file():
     with open('static/Прилагательные и причастия.txt', 'r', encoding="utf-8") as f:
         all_words = [line.strip() for line in f]
 
-    session['all_pri_count'] = len(all_words)
+    random.shuffle(all_words)
+    session['all_pri'] = all_words
     session['used_pri'] = []
+    session['pri_current_index'] = 0
     session['kolvo'] = 0
     session['yes'] = 0
     session.modified = True
@@ -190,20 +197,15 @@ def pri_file():
 
 @app.route("/exercise_pri", methods=["GET", "POST"])
 def exercise_pri():
-    if 'all_pri_count' not in session:
-        return redirect(url_for('pri_file'))
-    with open('static/Прилагательные и причастия.txt', 'r', encoding="utf-8") as f:
-        all_pri = [line.strip() for line in f]
-
+    all_pri = session.get('all_pri', [])
+    current_index = session.get('pri_current_index', 0)
     used_pri = session.get('used_pri', [])
-
-    available_pri = [word for word in all_pri if word not in used_pri]
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
         return render_template('exercise_pri.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'button_type' in request.form:
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
 
@@ -214,19 +216,23 @@ def exercise_pri():
         session['kolvo'] = session.get('kolvo', 0) + 1
         if button_type == 'yes':
             session['yes'] = session.get('yes', 0) + 1
+
+        session['pri_current_index'] = current_index + 1
         session.modified = True
 
         if current_user.is_authenticated:
             db_sess = db_session.create_session()
             update_statistic(db_sess, current_user, 'pri', button_type == 'yes')
             db_sess.close()
+        return redirect(url_for('exercise_pri'))
 
-    if available_pri:
-        word = random.choice(available_pri)
+    if current_index < len(all_pri):
+        word = all_pri[current_index]
         if '(' in word:
             word = word.split('(')[0]
     else:
-        word = ""
+        return render_template('exercise_pri.html', data=None,
+                               yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
@@ -241,8 +247,10 @@ def glag_file():
     with open('static/Глаголы.txt', 'r', encoding="utf-8") as f:
         all_words = [line.strip() for line in f]
 
-    session['all_glag_count'] = len(all_words)
+    random.shuffle(all_words)
+    session['all_glag'] = all_words
     session['used_glag'] = []
+    session['glag_current_index'] = 0
     session['kolvo'] = 0
     session['yes'] = 0
     session.modified = True
@@ -252,20 +260,15 @@ def glag_file():
 
 @app.route("/exercise_glag", methods=["GET", "POST"])
 def exercise_glag():
-    if 'all_glag_count' not in session:
-        return redirect(url_for('glag_file'))
-    with open('static/Глаголы.txt', 'r', encoding="utf-8") as f:
-        all_glag = [line.strip() for line in f]
-
+    all_glag = session.get('all_glag', [])
+    current_index = session.get('glag_current_index', 0)
     used_glag = session.get('used_glag', [])
-
-    available_glag = [word for word in all_glag if word not in used_glag]
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
         return render_template('exercise_glag.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'button_type' in request.form:
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
 
@@ -276,19 +279,23 @@ def exercise_glag():
         session['kolvo'] = session.get('kolvo', 0) + 1
         if button_type == 'yes':
             session['yes'] = session.get('yes', 0) + 1
+
+        session['glag_current_index'] = current_index + 1
         session.modified = True
 
         if current_user.is_authenticated:
             db_sess = db_session.create_session()
             update_statistic(db_sess, current_user, 'glag', button_type == 'yes')
             db_sess.close()
+        return redirect(url_for('exercise_glag'))
 
-    if available_glag:
-        word = random.choice(available_glag)
+    if current_index < len(all_glag):
+        word = all_glag[current_index]
         if '(' in word:
             word = word.split('(')[0]
     else:
-        word = ""
+        return render_template('exercise_glag.html', data=None,
+                               yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
@@ -296,13 +303,17 @@ def exercise_glag():
 
     return render_template('exercise_glag.html', data=word, cogl=cogl, glas=glas,
                            kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
+
+
 @app.route("/dn_file")
 def dn_file():
     with open('static/Деепричастия и наречия.txt', 'r', encoding="utf-8") as f:
         all_words = [line.strip() for line in f]
 
-    session['all_dn_count'] = len(all_words)
+    random.shuffle(all_words)
+    session['all_dn'] = all_words
     session['used_dn'] = []
+    session['dn_current_index'] = 0
     session['kolvo'] = 0
     session['yes'] = 0
     session.modified = True
@@ -312,20 +323,15 @@ def dn_file():
 
 @app.route("/exercise_dn", methods=["GET", "POST"])
 def exercise_dn():
-    if 'all_dn_count' not in session:
-        return redirect(url_for('dn_file'))
-    with open('static/Деепричастия и наречия.txt', 'r', encoding="utf-8") as f:
-        all_dn = [line.strip() for line in f]
-
+    all_dn = session.get('all_dn', [])
+    current_index = session.get('dn_current_index', 0)
     used_dn = session.get('used_dn', [])
-
-    available_dn = [word for word in all_dn if word not in used_dn]
 
     if request.method == 'POST' and 'action' in request.form and request.form['action'] == 'finish':
         return render_template('exercise_dn.html', data=None,
                                yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'button_type' in request.form:
         button_type = request.form.get('button_type')
         current_word = request.form.get('current_word')
 
@@ -336,6 +342,8 @@ def exercise_dn():
         session['kolvo'] = session.get('kolvo', 0) + 1
         if button_type == 'yes':
             session['yes'] = session.get('yes', 0) + 1
+
+        session['dn_current_index'] = current_index + 1
         session.modified = True
 
         if current_user.is_authenticated:
@@ -343,12 +351,16 @@ def exercise_dn():
             update_statistic(db_sess, current_user, 'dn', button_type == 'yes')
             db_sess.close()
 
-    if available_dn:
-        word = random.choice(available_dn)
+        return redirect(url_for('exercise_dn'))
+
+    if current_index < len(all_dn):
+        word = all_dn[current_index]
+
         if '(' in word:
             word = word.split('(')[0]
     else:
-        word = ""
+        return render_template('exercise_dn.html', data=None,
+                               yes=session.get('yes', 0), kolvo=session.get('kolvo', 0))
 
     cogl = ["б", "в", "г", "д", "ж", "з", "й", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ",
             "ъ", "ь"]
@@ -356,6 +368,7 @@ def exercise_dn():
 
     return render_template('exercise_dn.html', data=word, cogl=cogl, glas=glas,
                            kolvo=session.get('kolvo', 0), yes=session.get('yes', 0))
+
 
 @app.route("/theory")
 def theory():
@@ -374,6 +387,7 @@ def theory():
                 sections[current_section].append(line)
 
     return render_template('theory.html', sections=sections)
+
 
 @app.route("/statistic")
 @login_required
@@ -412,6 +426,7 @@ def sign_in():
             return render_template("sign_in.html")
         finally:
             session_db.close()
+
 
 @app.route('/sign_out')
 def sign_out():
@@ -467,4 +482,4 @@ def reg_users():
 
 
 if __name__ == "__main__":
-    app.run(port="5000", host="127.0.0.1", debug=True)
+    app.run(port="8080", host="127.0.0.1", debug=True)
